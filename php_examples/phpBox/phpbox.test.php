@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Test script for phpBox
+ *
+ * @author Lars Echerhoff <lechterhoff/gedak.de>
+ * @version 1.0
+ * @link http://code.google.com/p/phpbox/
+ * @license GNU GPL v2
+ */
+
 interface phpbox_interface
 {
 
