@@ -99,7 +99,7 @@ namespace phpBox
         private void writeHelpView()
         {
             txtOutput.Text += "Usage: phpBox [-r <file>] [-s <file>] [-p \"<parameter>\"]\n";
-            txtOutput.Text += "  -r <file>\t\tPHP runtime file with path (php-cgi.exe)\n";
+            txtOutput.Text += "  -r <file>\t\tPHP runtime file with path (php.exe)\n";
             txtOutput.Text += "  -runtime <file>\n\n";
 
             txtOutput.Text += "  -s <file>\t\tPHP script file with path (*.php)\n";
@@ -163,7 +163,7 @@ namespace phpBox
 
             if (!File.Exists(PHPFile))
             {
-                Call.Warning("php-cgi.exe not found!");
+                Call.Warning("php.exe not found!");
                 return;
             }
             #endregion
