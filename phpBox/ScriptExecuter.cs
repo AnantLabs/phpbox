@@ -14,6 +14,12 @@ namespace phpBox
         Error
     }
 
+    public enum ExecuteType
+    {
+        File
+        ,Code
+    }
+
     public class ScriptExecuter
     {
 
@@ -30,6 +36,8 @@ namespace phpBox
 
         public string PHPFile { get; set; }
 
+        public ExecuteType Execute { get; set; }
+
         private string _ScriptFile = "";
         public string ScriptFile
         {
@@ -43,6 +51,26 @@ namespace phpBox
                 {
                     _ScriptFile = value;
                 }
+            }
+        }
+
+        private string _ScriptCode = null;
+        private Regex _ScriptFilter = new Regex(@"<\?(?:php)?(.*)\?>", RegexOptions.Compiled | RegexOptions.Singleline);
+        public string ScriptCode
+        {
+            set
+            {
+                Match mt = _ScriptFilter.Match(value);
+                if(mt.Success){
+                    _ScriptCode = mt.Groups[1].Value;
+                }else{
+                    _ScriptCode = value;
+                }
+            }
+
+            protected get
+            {
+                return _ScriptCode;
             }
         }
 
@@ -84,6 +112,8 @@ namespace phpBox
             this.PHPFile = PHPFile;
             this.ScriptFile = ScriptFile;
             this.ScriptArguments = ScriptArguments;
+
+            this.Execute = ExecuteType.File;
 
             this.StartTime = DateTime.Now;
         }
@@ -153,7 +183,10 @@ namespace phpBox
         {
             myStartInfo = new ProcessStartInfo();
             myStartInfo.FileName = PHPFile;
-            myStartInfo.Arguments = "-f \"" + ScriptFile + "\"";
+            if(Execute == ExecuteType.File)
+                myStartInfo.Arguments = "-f \"" + ScriptFile + "\"";
+            else if(Execute == ExecuteType.Code)
+                myStartInfo.Arguments = "-r \"" + ScriptCode.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
 
             if (!String.IsNullOrWhiteSpace(ScriptArguments))
             {

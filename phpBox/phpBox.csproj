@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\Execute.png" />
     <None Include="Resources\Browse.png" />
     <None Include="Resources\Start.png" />
     <None Include="Resources\icon.ico" />

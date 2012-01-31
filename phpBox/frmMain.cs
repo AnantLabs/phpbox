@@ -151,6 +151,11 @@ namespace phpBox
             }
         }
 
+        private void ExecuteScript()
+        {
+
+        }
+
         private void StartScript()
         {
             #region check_inizialized
@@ -533,6 +538,17 @@ namespace phpBox
             {
                 StartScript();
             }
+        }
+
+        private void txtFilePath_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            txtFilePath.Text = files[0];
+        }
+
+        private void txtFilePath_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Link;
         }
     }
 }
