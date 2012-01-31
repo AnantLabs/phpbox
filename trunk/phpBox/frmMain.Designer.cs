@@ -36,9 +36,9 @@
             this.btnFile = new System.Windows.Forms.ToolStripSplitButton();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnExecute = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnTopMost = new System.Windows.Forms.ToolStripButton();
+            this.btnExecute = new System.Windows.Forms.ToolStripButton();
             this.mainTabs = new System.Windows.Forms.TabControl();
             this.tpScriptFile = new System.Windows.Forms.TabPage();
             this.btnGetFile = new System.Windows.Forms.Button();
@@ -83,9 +83,9 @@
             this.mainTools.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.mainTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnFile,
-            this.btnExecute,
             this.toolStripSeparator3,
-            this.btnTopMost});
+            this.btnTopMost,
+            this.btnExecute});
             this.mainTools.Location = new System.Drawing.Point(0, 57);
             this.mainTools.Name = "mainTools";
             this.mainTools.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
@@ -126,16 +126,6 @@
             this.exitToolStripMenuItem.ToolTipText = "Close phpBox";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // btnExecute
-            // 
-            this.btnExecute.Image = global::phpBox.Icons.Start;
-            this.btnExecute.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnExecute.Name = "btnExecute";
-            this.btnExecute.Size = new System.Drawing.Size(51, 28);
-            this.btnExecute.Text = "Start";
-            this.btnExecute.ToolTipText = "Start or stop executing script";
-            this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
-            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -152,6 +142,15 @@
             this.btnTopMost.Text = "Top most";
             this.btnTopMost.ToolTipText = "Set phpBox to top most window";
             this.btnTopMost.Click += new System.EventHandler(this.btnTopMost_Click);
+            // 
+            // btnExecute
+            // 
+            this.btnExecute.Image = global::phpBox.Icons.Start;
+            this.btnExecute.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnExecute.Name = "btnExecute";
+            this.btnExecute.Size = new System.Drawing.Size(51, 28);
+            this.btnExecute.Text = "Start";
+            this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
             // 
             // mainTabs
             // 
@@ -193,6 +192,7 @@
             // 
             // txtFilePath
             // 
+            this.txtFilePath.AllowDrop = true;
             this.txtFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFilePath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -202,6 +202,8 @@
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(475, 23);
             this.txtFilePath.TabIndex = 0;
+            this.txtFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragDrop);
+            this.txtFilePath.DragEnter += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragEnter);
             this.txtFilePath.DoubleClick += new System.EventHandler(this.getFile);
             // 
             // tpParameter
@@ -279,6 +281,7 @@
             // 
             // frmMain
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(502, 578);
@@ -296,6 +299,8 @@
             this.Text = "phpBox";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragEnter);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.frmMain_KeyPress);
             this.mainStatus.ResumeLayout(false);
             this.mainStatus.PerformLayout();
@@ -325,7 +330,6 @@
         private System.Windows.Forms.ToolStripSplitButton btnFile;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton btnExecute;
         private System.Windows.Forms.Timer viewUpdater;
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
         private System.Windows.Forms.Label lblPercent;
@@ -333,6 +337,7 @@
         private System.Windows.Forms.Label lblExecTime;
         private System.Windows.Forms.ToolStripButton btnTopMost;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton btnExecute;
 
     }
 }
