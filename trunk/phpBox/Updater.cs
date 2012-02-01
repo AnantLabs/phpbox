@@ -99,14 +99,19 @@ namespace phpBox
                         myDownloader = new WebClient();
                         myDownloader.DownloadFile(mt.Groups[2].Value, updPath);
 
-                        string[] cmd = new string[5];
-                        cmd[0] = "set title \"phpBox updater\"";
-                        cmd[1] = "ping localhost -n 2 -w 3000 > nul";               //Wait 2 seconds
-                        cmd[2] = "del \"" + appPath + "\"";                         //Delete old file
-                        cmd[3] = "move \"" + updPath + "\" \"" + appPath + "\"";    //Move updated file
-                        cmd[4] = "del \"" + ubtPath + "\"";                         //Delete update batch file
+                        string cmd = "";
+                        cmd += "@echo off\n";
+                        cmd += "set title \"phpBox updater\"\n";
+                        cmd += "echo Updating phpBox...";
+                        cmd += "ping localhost -n 2 -w 3000 > nul\n";               //Wait 2 seconds
+                        cmd += "echo Delete old file";
+                        cmd += "del \"" + appPath + "\"\n";                         //Delete old file
+                        cmd += "echo Paste new file";
+                        cmd += "move \"" + updPath + "\" \"" + appPath + "\"\n";    //Move updated file
+                        cmd += "echo phpBox updated successfully!";
+                        cmd += "del \"" + ubtPath + "\"\n";                         //Delete update batch file
 
-                        File.WriteAllLines(ubtPath, cmd);
+                        File.WriteAllText(ubtPath, cmd);
 
                         Status = UpdateStatus.Ready;
 
