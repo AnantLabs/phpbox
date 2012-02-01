@@ -107,6 +107,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\FileReady.png" />
+    <None Include="Resources\FileFailed.png" />
+    <None Include="Resources\FileDownloading.png" />
+    <None Include="Resources\icon.png" />
     <None Include="Resources\Execute.png" />
     <None Include="Resources\Browse.png" />
     <None Include="Resources\Start.png" />

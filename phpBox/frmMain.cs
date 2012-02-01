@@ -95,6 +95,7 @@ namespace phpBox
             Executer.ShowError += new ScriptExecuter.CommandEventHandler(InvokeShowError);
 
             AutoUpdater = new Updater(@"http://code.google.com/feeds/p/phpbox/downloads/basic/");
+            AutoUpdater.UpdateReport += new Updater.UpdateReportHandler(updateStatusChanged);
         }
         #endregion
 
@@ -110,6 +111,17 @@ namespace phpBox
 
             txtOutput.Text += "  -p \"<parameter>\"\tPHP script parameter (name=value&namen=valuen)\n";
             txtOutput.Text += "  -parameter \"<parameter>\"\n\n";
+        }
+
+        private void updateStatusChanged(UpdateStatus status)
+        {
+            switch (status)
+            {
+                case UpdateStatus.None: btnFile.Image = Icons.File; break;
+                case UpdateStatus.Downloading: btnFile.Image = Icons.FileDownloading; break;
+                case UpdateStatus.Ready: btnFile.Image = Icons.FileReady; break;
+                case UpdateStatus.Failed: btnFile.Image = Icons.FileFailed; break;
+            }
         }
 
         private void btnTopMost_Click(object sender, EventArgs e)
