@@ -59,6 +59,7 @@ namespace phpBox
         }
 
         public ScriptExecuter Executer { get; set; }
+        public Updater AutoUpdater { get; set; }
 
         public frmMain()
         {
@@ -92,6 +93,8 @@ namespace phpBox
 
             Executer.ShowNotice += new ScriptExecuter.CommandEventHandler(InvokeShowNotice);
             Executer.ShowError += new ScriptExecuter.CommandEventHandler(InvokeShowError);
+
+            AutoUpdater = new Updater(@"http://code.google.com/feeds/p/phpbox/downloads/basic/");
         }
         #endregion
 
@@ -529,15 +532,33 @@ namespace phpBox
                     e.Cancel = true;
                 }
             }
+
+            this.Hide();
+
+            if (System.IO.File.Exists(Executer.ClearScriptFile))
+            {
+                ScriptExecuter sClean = new ScriptExecuter(PHPFile, Executer.ClearScriptFile, "");
+                sClean.Start();
+                while (sClean.IsExecuting)
+                {
+                    Application.DoEvents();
+                }
+            }
+
+            if (AutoUpdater.NewUpdate)
+            {
+                AutoUpdater.StartUpdate();
+            }
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-
             if (!String.IsNullOrEmpty(ScriptPath))
             {
                 StartScript();
             }
+
+            AutoUpdater.Update();
         }
 
         private void txtFilePath_DragDrop(object sender, DragEventArgs e)

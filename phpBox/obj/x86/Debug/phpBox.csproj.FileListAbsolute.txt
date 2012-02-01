@@ -30,3 +30,15 @@ D:\Dropbox\C#\phpBox\phpBox\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Dropbox\C#\phpBox\phpBox\obj\x86\Debug\phpBox.About.resources
 C:\Dropbox\C#\phpBox\phpBox\bin\Debug\phpBox.exe.config
 D:\Dropbox\C#\phpBox\phpBox\bin\Debug\phpBox.exe.config
+C:\SVN\phpBox\phpBox\bin\Debug\phpBox.exe.config
+C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.exe
+C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.pdb
+C:\SVN\phpBox\phpBox\bin\Debug\phpBox.exe
+C:\SVN\phpBox\phpBox\bin\Debug\phpBox.pdb
+C:\SVN\phpBox\phpBox\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.About.resources
+C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.frmMain.resources
+C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.Icons.resources
+C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.Properties.Resources.resources
+C:\SVN\phpBox\phpBox\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\SVN\phpBox\phpBox\obj\x86\Debug\GenerateResource.write.1.tlog
