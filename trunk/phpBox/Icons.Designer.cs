@@ -95,10 +95,31 @@ namespace phpBox {
             }
         }
         
-        internal static System.Drawing.Icon icon {
+        internal static System.Drawing.Bitmap FileDownloading {
+            get {
+                object obj = ResourceManager.GetObject("FileDownloading", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap FileFailed {
+            get {
+                object obj = ResourceManager.GetObject("FileFailed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap FileReady {
+            get {
+                object obj = ResourceManager.GetObject("FileReady", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap icon {
             get {
                 object obj = ResourceManager.GetObject("icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

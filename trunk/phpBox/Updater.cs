@@ -101,14 +101,14 @@ namespace phpBox
 
                         string cmd = "";
                         cmd += "@echo off\n";
-                        cmd += "set title \"phpBox updater\"\n";
-                        cmd += "echo Updating phpBox...";
+                        cmd += "title \"phpBox updater\"\n";
+                        cmd += "echo Updating phpBox...\n";
                         cmd += "ping localhost -n 2 -w 3000 > nul\n";               //Wait 2 seconds
-                        cmd += "echo Delete old file";
+                        cmd += "echo Delete old file...\n";
                         cmd += "del \"" + appPath + "\"\n";                         //Delete old file
-                        cmd += "echo Paste new file";
+                        cmd += "echo Paste new file...\n";
                         cmd += "move \"" + updPath + "\" \"" + appPath + "\"\n";    //Move updated file
-                        cmd += "echo phpBox updated successfully!";
+                        cmd += "echo phpBox updated successfully!\n";
                         cmd += "del \"" + ubtPath + "\"\n";                         //Delete update batch file
 
                         File.WriteAllText(ubtPath, cmd);
