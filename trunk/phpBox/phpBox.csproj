@@ -72,6 +72,7 @@
     <Compile Include="Call.cs" />
     <Compile Include="ScriptData.cs" />
     <Compile Include="ScriptExecuter.cs" />
+    <Compile Include="Updater.cs" />
     <Compile Include="Win32.cs" />
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>

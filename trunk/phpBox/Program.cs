@@ -28,16 +28,6 @@ namespace phpBox
                 Application.SetCompatibleTextRenderingDefault(false);
                 _MainForm = new frmMain();
                 Application.Run(MainForm);
-
-                if (System.IO.File.Exists(MainForm.Executer.ClearScriptFile))
-                {
-                    ScriptExecuter sClean = new ScriptExecuter(MainForm.PHPFile, MainForm.Executer.ClearScriptFile, "");
-                    sClean.Start();
-                    while (sClean.IsExecuting)
-                    {
-                        Application.DoEvents();
-                    }
-                }
             }
             catch (Exception ex)
             {
