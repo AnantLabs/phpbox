@@ -547,6 +547,10 @@ namespace phpBox
 
             if (AutoUpdater.NewUpdate)
             {
+                while (AutoUpdater.Status == UpdateStatus.Downloading)
+                {
+                    Application.DoEvents();
+                }
                 AutoUpdater.StartUpdate();
             }
         }

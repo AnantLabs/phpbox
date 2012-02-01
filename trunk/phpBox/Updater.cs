@@ -10,17 +10,50 @@ using System.Diagnostics;
 
 namespace phpBox
 {
+
+    public enum UpdateStatus
+    {
+        None,
+        Downloading,
+        Ready,
+        Failed
+    }
+
     public class Updater
     {
+        protected string file = Program.AppDirectory + @"\update.ini";
 
         protected Thread myThread { get; set; }
         protected WebClient myRequest { get; set; }
         protected WebClient myDownloader { get; set; }
         protected Regex checkUpdate { get; set; }
+        protected IniParser myIni { get; set; }
 
         public string URL { get; protected set; }
         public string LastUpdate { get; protected set; }
         public bool NewUpdate { get; set; }
+
+        protected UpdateStatus _Status = UpdateStatus.None;
+        public UpdateStatus Status
+        {
+            get
+            {
+                return _Status;
+            }
+
+            set
+            {
+                _Status = value;
+                try
+                {
+                    UpdateReport(value);
+                }
+                catch
+                {
+                }
+                
+            }
+        }
 
         public Updater(string url)
         {
@@ -28,9 +61,12 @@ namespace phpBox
                 @"<entry>.*?<updated>([^<]*?)</updated>.*?Labels:.*?Auto-Update.*?(http.*?\.exe).*?</entry>",
                 RegexOptions.Compiled | RegexOptions.Singleline
             );
+
+            myIni = new IniParser(file);
+
             this.URL = url;
             this.NewUpdate = false;
-            this.LastUpdate = "";
+            this.LastUpdate = myIni.GetValue("Date");
         }
 
 
@@ -52,25 +88,37 @@ namespace phpBox
             {
                 if (mt.Groups[1].Value != LastUpdate)
                 {
-                    string updPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\" + 
-                        Path.GetFileName(mt.Groups[2].Value);
+                    try
+                    {
+                        Status = UpdateStatus.Downloading;
 
-                    myDownloader = new WebClient();
-                    myDownloader.DownloadFile(mt.Groups[2].Value, updPath);
+                        string updPath = Program.AppDirectory + @"\" + Path.GetFileName(mt.Groups[2].Value);
+                        string appPath = Environment.GetCommandLineArgs()[0];
+                        string ubtPath = Program.AppDirectory + @"\update.bat";
 
-                    string appPath = Environment.GetCommandLineArgs()[0];
+                        myDownloader = new WebClient();
+                        myDownloader.DownloadFile(mt.Groups[2].Value, updPath);
 
-                    string[] cmd = new string[5];
-                    cmd[0] = "set title \"phpBox updater\"";
-                    cmd[1] = "ping localhost -n 2 -w 3000 > nul";               //Wait 2 seconds
-                    cmd[2] = "del \"" + appPath + "\"";                         //Delete old file
-                    cmd[3] = "move \"" + updPath + "\" \"" + appPath + "\"";    //Move updated file
-                    cmd[4] = "del update.bat";                                  //Delete update batch file
+                        string[] cmd = new string[5];
+                        cmd[0] = "set title \"phpBox updater\"";
+                        cmd[1] = "ping localhost -n 2 -w 3000 > nul";               //Wait 2 seconds
+                        cmd[2] = "del \"" + appPath + "\"";                         //Delete old file
+                        cmd[3] = "move \"" + updPath + "\" \"" + appPath + "\"";    //Move updated file
+                        cmd[4] = "del \"" + ubtPath + "\"";                         //Delete update batch file
 
-                    File.WriteAllLines("update.bat", cmd);
+                        File.WriteAllLines(ubtPath, cmd);
 
-                    NewUpdate = true;
-                    LastUpdate = mt.Groups[1].Value;
+                        Status = UpdateStatus.Ready;
+
+                        myIni.SetValue("Date", mt.Groups[1].Value, "Date of last update");
+
+                        NewUpdate = true;
+                        LastUpdate = mt.Groups[1].Value;
+                    }
+                    catch
+                    {
+                        Status = UpdateStatus.Failed;
+                    }
                 }
             }
         }
@@ -78,10 +126,15 @@ namespace phpBox
 
         public void StartUpdate()
         {
-            Process.Start("update.bat");
+            Process.Start(Program.AppDirectory + @"\update.bat");
         }
 
+        ~Updater()
+        {
+            myIni.Save(file);
+        }
 
-
+        public delegate void UpdateReportHandler(UpdateStatus status);
+        public event UpdateReportHandler UpdateReport;
     }
 }
