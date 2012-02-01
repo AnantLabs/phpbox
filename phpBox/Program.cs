@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.IO;
 
 namespace phpBox
 {
@@ -16,6 +17,8 @@ namespace phpBox
             }
         }
 
+        public static string AppDirectory { get; private set; }
+
         /// <summary>
         /// Der Haupteinstiegspunkt für die Anwendung.
         /// </summary>
@@ -24,6 +27,12 @@ namespace phpBox
         {
             try
             {
+                AppDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\phpBox";
+                if (!Directory.Exists(AppDirectory))
+                {
+                    Directory.CreateDirectory(AppDirectory);
+                }
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 _MainForm = new frmMain();
