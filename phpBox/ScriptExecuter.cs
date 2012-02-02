@@ -28,6 +28,20 @@ namespace phpBox
         protected Process myProcess { get; set; }
 
         public bool IsExecuting { get; set; }
+        public bool IsRunning
+        {
+            get
+            {
+                try
+                {
+                    return !myProcess.HasExited;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
         public bool IsStoppable { get; set; }
         public bool IsStartable { get; set; }
         public bool EditableParameter { get; set; }
@@ -122,7 +136,9 @@ namespace phpBox
         public void Start()
         {
             if (!IsStartable) return;
+            if(IsRunning) Stop();
             myThread = new Thread(runProcess);
+            myThread.Name = "phpBox - Script Executer";
             myThread.IsBackground = true;
             myThread.Priority = ThreadPriority.Highest;
             myThread.Start();
@@ -131,21 +147,26 @@ namespace phpBox
 
         public void Stop(StopReason reason = StopReason.Canceled)
         {
-            if (!IsStoppable) return;
+            if (!IsStoppable || myProcess == null) return;
             try
             {
                 if (!myProcess.HasExited)
                 {
                     myProcess.Kill();
                     myProcess.Dispose();
-                }
-
-                myThread.Abort();
-                IsExecuting = false;
-                ScriptStopped(reason);
+                } 
             }
-            catch
+            finally
             {
+                try
+                {
+                    myThread.Abort();
+                }
+                finally
+                {
+                    IsExecuting = false;
+                    ScriptStopped(reason);
+                }
             }
         }
 
@@ -181,45 +202,56 @@ namespace phpBox
 
         protected void runProcess()
         {
-            myStartInfo = new ProcessStartInfo();
-            myStartInfo.FileName = PHPFile;
-            if(Execute == ExecuteType.File)
-                myStartInfo.Arguments = "-f \"" + ScriptFile + "\"";
-            else if(Execute == ExecuteType.Code)
-                myStartInfo.Arguments = "-r \"" + ScriptCode.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
-
-            if (!String.IsNullOrWhiteSpace(ScriptArguments))
-            {
-                myStartInfo.Arguments += " -- \"" + ScriptArguments + "\"";
-            }
-
-            myStartInfo.WorkingDirectory = Path.GetDirectoryName(ScriptFile);
-            myStartInfo.CreateNoWindow = true;
-            myStartInfo.RedirectStandardOutput = true;
-            myStartInfo.RedirectStandardError = true;
-            myStartInfo.UseShellExecute = false;
-            myStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-            myProcess = new Process();
-            myProcess.StartInfo = myStartInfo;
-            myProcess.EnableRaisingEvents = true;
-
-            myProcess.OutputDataReceived += new DataReceivedEventHandler(OnProcessDataRecived);
-            myProcess.ErrorDataReceived += new DataReceivedEventHandler(OnProcessErrorRecived);
-
-            myProcess.Start();
-            this.StartTime = DateTime.Now;
-            IsExecuting = true;
-            myProcess.BeginErrorReadLine();
-            myProcess.BeginOutputReadLine();
-            myProcess.WaitForExit();
-            IsExecuting = false;
             try
             {
-                ScriptStopped(StopReason.Executed);
+                myStartInfo = new ProcessStartInfo();
+                myStartInfo.FileName = PHPFile;
+                if (Execute == ExecuteType.File)
+                    myStartInfo.Arguments = "-f \"" + ScriptFile + "\"";
+                else if (Execute == ExecuteType.Code)
+                    myStartInfo.Arguments = "-r \"" + ScriptCode.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
+
+                if (!String.IsNullOrWhiteSpace(ScriptArguments))
+                {
+                    myStartInfo.Arguments += " -- \"" + ScriptArguments + "\"";
+                }
+
+                myStartInfo.WorkingDirectory = Path.GetDirectoryName(ScriptFile);
+                myStartInfo.CreateNoWindow = true;
+                myStartInfo.RedirectStandardOutput = true;
+                myStartInfo.RedirectStandardError = true;
+                myStartInfo.UseShellExecute = false;
+                myStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                myProcess = new Process();
+                myProcess.StartInfo = myStartInfo;
+                myProcess.EnableRaisingEvents = true;
+
+                myProcess.OutputDataReceived += new DataReceivedEventHandler(OnProcessDataRecived);
+                myProcess.ErrorDataReceived += new DataReceivedEventHandler(OnProcessErrorRecived);
+
+                myProcess.Start();
+                this.StartTime = DateTime.Now;
+
+                if (!myProcess.HasExited)
+                {
+                    IsExecuting = true;
+                    myProcess.BeginErrorReadLine();
+                    myProcess.BeginOutputReadLine();
+                    myProcess.WaitForExit();
+                }
+
+                try
+                {
+                    ScriptStopped(StopReason.Executed);
+                }
+                catch
+                {
+                }
             }
-            catch
+            finally
             {
+                IsExecuting = false;
             }
         }
 

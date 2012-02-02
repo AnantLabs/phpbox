@@ -25,8 +25,6 @@ namespace phpBox
         [STAThread]
         static void Main()
         {
-            try
-            {
                 AppDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\phpBox";
                 if (!Directory.Exists(AppDirectory))
                 {
@@ -37,11 +35,6 @@ namespace phpBox
                 Application.SetCompatibleTextRenderingDefault(false);
                 _MainForm = new frmMain();
                 Application.Run(MainForm);
-            }
-            catch (Exception ex)
-            {
-                Call.Error(ex);
-            }
         }
     }
 }
