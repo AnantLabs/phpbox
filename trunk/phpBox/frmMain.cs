@@ -2,6 +2,8 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Text.RegularExpressions;
 #endregion
 namespace phpBox
 {
@@ -17,6 +19,8 @@ namespace phpBox
 
         #region Fields
 
+        private string file = Program.AppDirectory + @"\settings.ini";
+
         public string ScriptPath
         {
             set
@@ -29,10 +33,20 @@ namespace phpBox
                 return txtFilePath.Text;
             }
         }
+        private string _PHPFile = @"php.exe";
         public string PHPFile
         {
-            set;
-            get;
+            set
+            {
+                _PHPFile = value;
+                IniFile.SetValue("PHPFile", value, "Last known php path...");
+            }
+            get
+            {
+                if (!File.Exists(_PHPFile))
+                    _PHPFile = IniFile.GetValue("PHPFile");
+                return _PHPFile;
+            }
         }
         public string ScriptArguments
         {
@@ -57,22 +71,41 @@ namespace phpBox
                 return lblStatus.Text;
             }
         }
+        public string RuntimeVersion 
+        { 
+            get 
+            {
+                Match mt = Regex.Match(File.ReadAllText(PHPFile), @"([0-9]+\.[0-9]+\.[0-9]+)");
+                if (mt.Success)
+                {
+                    return mt.Groups[1].Value;
+                }
+                else return null;
+            } 
+        }
+
 
         public ScriptExecuter Executer { get; set; }
         public Updater AutoUpdater { get; set; }
+        public IniParser IniFile { get; set; }
 
         public frmMain()
         {
             InitializeComponent();
             this.Text = Application.ProductName;
-            PHPFile = @"php.exe";
+
+            IniFile = new IniParser(file);
 
             Arguments.Initialize();
-            string r, s, p;
+            string r, s, p, d;
 
             r = Arguments.GetValue("r", "runtime");
             s = Arguments.GetValue("s", "script");
             p = Arguments.GetValue("p", "parameter");
+
+            d = Arguments.GetValueOf(1);
+            if (!String.IsNullOrEmpty(d) && !d.StartsWith("-") && String.IsNullOrEmpty(s)) s = d;
+            
 
             if (!String.IsNullOrEmpty(Arguments.GetValue("h", "help"))) writeHelpView();
 
@@ -84,18 +117,22 @@ namespace phpBox
             Executer.DataRecived += new ScriptExecuter.DataRecivedEventHandler(Executer_DataRecived);
             Executer.ScriptStopped += new ScriptExecuter.ScriptStoppedEventHandler(ScriptEnd);
             //Commands
-            Executer.ChangeStatus +=new ScriptExecuter.CommandEventHandler(InvokeSetStatus);
-            Executer.ChangeCaption += new ScriptExecuter.CommandEventHandler(InvokeSetCaption);
+            Executer.ChangeStatus_Old +=new ScriptExecuter.CommandEventHandler_Old(InvokeSetStatus_Old);
+            Executer.ChangeCaption_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeSetCaption_Old);
 
-            Executer.ReportProgress += new ScriptExecuter.CommandEventHandler(InvokeSetProgress);
+            Executer.ReportProgress_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeSetProgress_Old);
 
-            Executer.SetLines += new ScriptExecuter.CommandEventHandler(InvokeSetHeight);
+            Executer.SetLines_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeSetHeight_Old);
 
-            Executer.ShowNotice += new ScriptExecuter.CommandEventHandler(InvokeShowNotice);
-            Executer.ShowError += new ScriptExecuter.CommandEventHandler(InvokeShowError);
+            Executer.ShowNotice_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeShowNotice_Old);
+            Executer.ShowError_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeShowError_Old);
 
             AutoUpdater = new Updater(@"http://code.google.com/feeds/p/phpbox/downloads/basic/");
             AutoUpdater.UpdateReport += new Updater.UpdateReportHandler(updateStatusChanged);
+        }
+
+        ~frmMain()
+        {
         }
         #endregion
 
@@ -103,6 +140,7 @@ namespace phpBox
         private void writeHelpView()
         {
             txtOutput.Text += "Usage: phpBox [-r <file>] [-s <file>] [-p \"<parameter>\"]\n";
+            txtOutput.Text += "Usage: phpBox <script_file>\n";
             txtOutput.Text += "  -r <file>\t\tPHP runtime file with path (php.exe)\n";
             txtOutput.Text += "  -runtime <file>\n\n";
 
@@ -176,26 +214,45 @@ namespace phpBox
             #region check_inizialized
             if (!File.Exists(ScriptPath))
             {
-                if (!String.IsNullOrWhiteSpace(ScriptPath))
-                    Call.Warning("Script file not found!");
-                return;
+                if(String.IsNullOrWhiteSpace(ScriptPath))
+                    getFile(this, new EventArgs());
+                if (String.IsNullOrWhiteSpace(ScriptPath))
+                    return;
             }
 
             if (!File.Exists(PHPFile))
             {
-                Call.Warning("php.exe not found!");
-                return;
+                if (String.IsNullOrWhiteSpace(PHPFile) || PHPFile == @"php.exe")
+                {
+                    using (OpenFileDialog ofd = new OpenFileDialog())
+                    {
+                        ofd.Multiselect = false;
+                        ofd.Title = Application.ProductName + " - php.exe search";
+                        ofd.Filter = "PHP Executable (php.exe)|php.exe|All Files (*.*)|*.*";
+                        ofd.FilterIndex = 0;
+                        ofd.RestoreDirectory = true;
+                        if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            PHPFile = ofd.FileName;
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
             }
             #endregion
 
-            SetCaption(Path.GetFileName(ScriptPath));
+            SetCaption_Old(Path.GetFileName(ScriptPath));
 
+            Executer.PHPFile = PHPFile;
             Executer.ScriptFile = ScriptPath;
             Executer.ScriptArguments = ScriptArguments;
             setExecuteBtn();
-            SetLogReadPropery(true);
+            SetLogReadPropery_Old(true);
             writeHeader();
-            SetProgress("0");
+            SetProgress_Old("0");
             Executer.Start();
         }
 
@@ -207,14 +264,14 @@ namespace phpBox
                 case StopReason.Canceled:
                     writeFooter();
                     resetExecuteBtn();
-                    InvokeSetLogReadPropery(false);
-                    InvokeSetProgress("100");
+                    InvokeSetLogReadPropery_Old(false);
+                    InvokeSetProgress_Old("100");
                     if (Executer.Exit) Application.Exit();
                     break;
                 case StopReason.Error:
                     resetExecuteBtn();
-                    InvokeSetLogReadPropery(false);
-                    InvokeSetProgress("100");
+                    InvokeSetLogReadPropery_Old(false);
+                    InvokeSetProgress_Old("100");
                     break;
             }
         }
@@ -228,17 +285,21 @@ namespace phpBox
         private void writeHeader()
         {
             ClearLog();
-            InvokeWriteLogLine("Runtime:\t" + PHPFile);
-            InvokeWriteLogLine("Script:\t" + ScriptPath);
-            InvokeWriteLogLine("Parameter:\t" + (ScriptArguments.Length > 0 ? ScriptArguments : "-"));
-            InvokeWriteLogLine("Starttime:\t" + getTimeOfDay(DateTime.Now));
-            InvokeWriteLogLine("────────── Shell Output ──────────");
+            Color clr = Color.Gray;
+            InvokeWriteLogLine_Old("PHP Runtime:\t" + RuntimeVersion, clr);
+            InvokeWriteLogLine_Old("Script:\t" + Path.GetFileName(ScriptPath), clr);
+            InvokeWriteLogLine_Old("Parameter:\t" + (ScriptArguments.Length > 0 ? ScriptArguments : "-"), clr);
+            InvokeWriteLogLine_Old("Starttime:\t" + getTimeOfDay(DateTime.Now), clr);
+            InvokeWriteLogLine_Old("--------- Shell Output ---------", clr);
         }
 
         private void writeFooter()
         {
-            InvokeWriteLogLine("──────────────────────────────────");
-            InvokeWriteLogLine("Endtime:\t" + getTimeOfDay(DateTime.Now));
+            Color clr = Color.Gray;
+            InvokeWriteLogLine_Old("--------------------------------", clr);
+            InvokeWriteLogLine_Old("Endtime:\t" + getTimeOfDay(DateTime.Now), clr);
+            InvokeWriteLogLine_Old("\t\t——————————————————", clr);
+            InvokeWriteLogLine_Old("\t\t" + lblExecTime.Text, clr);
         }
 
         private void setExecuteBtn()
@@ -422,84 +483,89 @@ namespace phpBox
         {
             if (e.Type == ScriptDataType.Error)
             {
-                InvokeWriteLogLine("[ScriptError] " + e.Message);
+                InvokeWriteLogLine_Old("[ScriptError] " + e.Message, Color.Red);
             }
             else
             {
-                InvokeWriteLogLine(e.Message);
+                InvokeWriteLogLine_Old(e.Message, Color.Black);
             }
         }
 
         #region Delegates
-
-        private void InvokeWriteLogLine(string Message)
-        {
-            this.BeginInvoke(new WriteLogLineHandle(WriteLogLine), Message);
-        }
-        public delegate void WriteLogLineHandle(string Message);
-        private void WriteLogLine(string Message)
-        {
-            txtOutput.AppendText(Message + "\n");
-        }
-
         private void ClearLog()
         {
             txtOutput.Text = "";
         }
 
-
-        public delegate void ChangeBoolValue(bool value);
-        public delegate void ChangeStringValue(string value);
-
-        private void SetLogReadPropery(bool value)
+        #region Old
+        private void InvokeWriteLogLine_Old(string Message, Color clr)
         {
-            txtOutput.ReadOnly = value;
+            this.BeginInvoke(new WriteLogLineHandle_Old(WriteLogLine_Old), Message, clr);
         }
-        private void InvokeSetLogReadPropery(bool value)
+        public delegate void WriteLogLineHandle_Old(string Message, Color clr);
+        private void WriteLogLine_Old(string Message, Color clr)
         {
-            this.Invoke(new ChangeBoolValue(SetLogReadPropery), value);
+            Color oclr = txtOutput.SelectionColor;
+            txtOutput.SelectionColor = clr;
+            txtOutput.AppendText(Message + "\n");
+            txtOutput.SelectionColor = oclr;
         }
 
         
-        private void SetStatus(string text)
+
+
+        public delegate void ChangeBoolValue_Old(bool value);
+        public delegate void ChangeStringValue_Old(string value);
+
+        private void SetLogReadPropery_Old(bool value)
+        {
+            txtOutput.ReadOnly = value;
+        }
+        private void InvokeSetLogReadPropery_Old(bool value)
+        {
+            this.Invoke(new ChangeBoolValue_Old(SetLogReadPropery_Old), value);
+        }
+
+        
+        private void SetStatus_Old(string text)
         {
             Status = text;
         }
-        private void InvokeSetStatus(string text)
+        private void InvokeSetStatus_Old(string text)
         {
-            this.Invoke(new ChangeStringValue(SetStatus), text);
+            this.Invoke(new ChangeStringValue_Old(SetStatus_Old), text);
         }
 
-        private void ShowNotice(string msg)
+        private void ShowNotice_Old(string msg)
         {
-            WriteLogLine("[Notice] " + msg);
+            WriteLogLine_Old("[Notice] " + msg, Color.Black);
             MessageBox.Show(msg, "Notice", MessageBoxButtons.OK, MessageBoxIcon.None);
         }
-        private void InvokeShowNotice(string msg)
+        private void InvokeShowNotice_Old(string msg)
         {
-            this.Invoke(new ChangeStringValue(ShowNotice), msg);  
+            this.Invoke(new ChangeStringValue_Old(ShowNotice_Old), msg);  
         }
 
-        private void ShowError(string msg)
+        private void ShowError_Old(string msg)
         {
-            WriteLogLine("[Error] " + msg);
+            WriteLogLine_Old("[Error] " + msg, Color.Red);
             MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        private void InvokeShowError(string msg)
+        private void InvokeShowError_Old(string msg)
         {
-            this.Invoke(new ChangeStringValue(ShowError), msg);
+            this.Invoke(new ChangeStringValue_Old(ShowError_Old), msg);
         }
 
-        private void SetCaption(string text)
+        private void SetCaption_Old(string text)
         {
             this.Text = text + " - " + Application.ProductName;
         }
-        private void InvokeSetCaption(string text)
+        private void InvokeSetCaption_Old(string text)
         {
-            this.Invoke(new ChangeStringValue(SetCaption), text);
+            this.Invoke(new ChangeStringValue_Old(SetCaption_Old), text);
         }
 
-        private void SetProgress(string value)
+        private void SetProgress_Old(string value)
         {
             try
             {
@@ -512,20 +578,20 @@ namespace phpBox
                 Call.Error(ex);
             }
         }
-        private void InvokeSetProgress(string value)
+        private void InvokeSetProgress_Old(string value)
         {
-            this.Invoke(new ChangeStringValue(SetProgress), value);
+            this.Invoke(new ChangeStringValue_Old(SetProgress_Old), value);
         }
 
-        private void SetHeight(string lines)
+        private void SetHeight_Old(string lines)
         {
             this.Height = 300 + (Convert.ToInt32(lines) * 5);
         }
-        private void InvokeSetHeight(string lines)
+        private void InvokeSetHeight_Old(string lines)
         {
-            this.Invoke(new ChangeStringValue(SetHeight), lines);
+            this.Invoke(new ChangeStringValue_Old(SetHeight_Old), lines);
         }
-
+        #endregion
         #endregion
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -557,6 +623,8 @@ namespace phpBox
                 }
             }
 
+            IniFile.Save(file);
+
             if (AutoUpdater.NewUpdate)
             {
                 while (AutoUpdater.Status == UpdateStatus.Downloading)
@@ -586,6 +654,11 @@ namespace phpBox
         private void txtFilePath_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Link;
+        }
+
+        private void txtOutput_SelectionChanged(object sender, EventArgs e)
+        {
+            lblSelCount.Text = "Sel: " + txtOutput.SelectedText.Length;
         }
     }
 }

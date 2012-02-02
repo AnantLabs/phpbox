@@ -32,6 +32,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.mainStatus = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.ToolStripStatusSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.lblSelCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainTools = new System.Windows.Forms.ToolStrip();
             this.btnFile = new System.Windows.Forms.ToolStripSplitButton();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,18 +62,31 @@
             // mainStatus
             // 
             this.mainStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblStatus});
-            this.mainStatus.Location = new System.Drawing.Point(0, 556);
+            this.lblStatus,
+            this.ToolStripStatusSeparator1,
+            this.lblSelCount});
+            this.mainStatus.Location = new System.Drawing.Point(0, 555);
             this.mainStatus.Name = "mainStatus";
-            this.mainStatus.Size = new System.Drawing.Size(502, 22);
+            this.mainStatus.Size = new System.Drawing.Size(502, 23);
             this.mainStatus.TabIndex = 0;
             this.mainStatus.Text = "Status";
             // 
             // lblStatus
             // 
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(94, 17);
+            this.lblStatus.Size = new System.Drawing.Size(94, 18);
             this.lblStatus.Text = "phpBox - welcome";
+            // 
+            // ToolStripStatusSeparator1
+            // 
+            this.ToolStripStatusSeparator1.Name = "ToolStripStatusSeparator1";
+            this.ToolStripStatusSeparator1.Size = new System.Drawing.Size(6, 23);
+            // 
+            // lblSelCount
+            // 
+            this.lblSelCount.Name = "lblSelCount";
+            this.lblSelCount.Size = new System.Drawing.Size(34, 18);
+            this.lblSelCount.Text = "Sel: 0";
             // 
             // mainTools
             // 
@@ -112,7 +127,7 @@
             // 
             this.aboutToolStripMenuItem.Image = global::phpBox.Icons.About;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "About phpBox";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
@@ -121,7 +136,7 @@
             // 
             this.exitToolStripMenuItem.Image = global::phpBox.Icons.Exit;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.ToolTipText = "Close phpBox";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
@@ -242,6 +257,7 @@
             this.txtOutput.Size = new System.Drawing.Size(502, 447);
             this.txtOutput.TabIndex = 3;
             this.txtOutput.Text = "";
+            this.txtOutput.SelectionChanged += new System.EventHandler(this.txtOutput_SelectionChanged);
             this.txtOutput.TextChanged += new System.EventHandler(this.txtOutput_TextChanged);
             // 
             // viewUpdater
@@ -332,6 +348,8 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.Timer viewUpdater;
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
+        private System.Windows.Forms.ToolStripSeparator ToolStripStatusSeparator1;
+        private System.Windows.Forms.ToolStripStatusLabel lblSelCount;
         private System.Windows.Forms.Label lblPercent;
         private System.Windows.Forms.ProgressBar pbProgress;
         private System.Windows.Forms.Label lblExecTime;
