@@ -92,8 +92,8 @@ namespace phpBox
                     {
                         Status = UpdateStatus.Downloading;
 
-                        string updPath = Program.AppDirectory + @"\" + Path.GetFileName(mt.Groups[2].Value);
                         string appPath = Environment.GetCommandLineArgs()[0];
+                        string updPath = Program.AppDirectory + @"\" + Path.GetFileName(appPath);
                         string ubtPath = Program.AppDirectory + @"\update.bat";
 
                         myDownloader = new WebClient();
