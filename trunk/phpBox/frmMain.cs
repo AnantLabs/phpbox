@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 #endregion
 namespace phpBox
 {
@@ -45,6 +46,7 @@ namespace phpBox
             {
                 if (!File.Exists(_PHPFile))
                     _PHPFile = IniFile.GetValue("PHPFile");
+                if (!File.Exists(_PHPFile)) return "php.exe";
                 return _PHPFile;
             }
         }
@@ -75,12 +77,7 @@ namespace phpBox
         { 
             get 
             {
-                Match mt = Regex.Match(File.ReadAllText(PHPFile), @"([0-9]+\.[0-9]+\.[0-9]+)");
-                if (mt.Success)
-                {
-                    return mt.Groups[1].Value;
-                }
-                else return null;
+                return FileVersionInfo.GetVersionInfo(PHPFile).FileVersion;
             } 
         }
 
@@ -438,7 +435,14 @@ namespace phpBox
                 {
                     if (IsKeyPushedDown(Keys.F5))
                     {
-                        if (Executer.IsExecuting) Executer.Stop();
+                        if (Executer.IsExecuting) 
+                        {
+                                Executer.Stop(); 
+                        }
+                        while (Executer.IsExecuting)
+                        {
+                            Application.DoEvents();
+                        }
                         setExecuteBtn();
                         StartScript();
                     }
