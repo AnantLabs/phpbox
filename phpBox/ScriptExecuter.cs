@@ -231,8 +231,8 @@ namespace phpBox
                 string Command = oarg[0] as string, Value = oarg[1] as string;
                 switch (Command.ToUpper())
                 {
-                    case "STATUS": ChangeStatus(Value); break;
-                    case "CAPTION": ChangeCaption(Value); break;
+                    case "STATUS": ChangeStatus_Old(Value); break;
+                    case "CAPTION": ChangeCaption_Old(Value); break;
 
                     case "PROGRESS":
                         Value = Value.Replace('.', ',');
@@ -249,19 +249,19 @@ namespace phpBox
                                 Value = "0";
                             }
                         }
-                        ReportProgress(Value);
+                        ReportProgress_Old(Value);
                         break;
 
-                    case "LINES": SetLines(Value); break;
+                    case "LINES": SetLines_Old(Value); break;
 
                     case "NOTICE": 
-                        ShowNotice(Value); 
+                        ShowNotice_Old(Value); 
                         break;
                     case "ERROR":
                         IsStoppable = true;
                         Exit = false;
                         Stop(StopReason.Error);
-                        ShowError(Value);
+                        ShowError_Old(Value);
                         break;
 
                     case "DISABLE_STOP": IsStoppable = false; break;
@@ -299,15 +299,15 @@ namespace phpBox
 
 
 
-        public delegate void CommandEventHandler(string Status);
-        public event CommandEventHandler ChangeStatus;
-        public event CommandEventHandler ChangeCaption;
+        public delegate void CommandEventHandler_Old(string Status);
+        public event CommandEventHandler_Old ChangeStatus_Old;
+        public event CommandEventHandler_Old ChangeCaption_Old;
 
-        public event CommandEventHandler ReportProgress;
+        public event CommandEventHandler_Old ReportProgress_Old;
 
-        public event CommandEventHandler SetLines;
+        public event CommandEventHandler_Old SetLines_Old;
 
-        public event CommandEventHandler ShowNotice;
-        public event CommandEventHandler ShowError; 
+        public event CommandEventHandler_Old ShowNotice_Old;
+        public event CommandEventHandler_Old ShowError_Old; 
     }
 }

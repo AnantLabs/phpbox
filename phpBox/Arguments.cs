@@ -38,7 +38,17 @@ namespace phpBox
             return null;
         }
 
-
+        public static string GetValueOf(int index)
+        {
+            try
+            {
+                return Environment.GetCommandLineArgs()[index];
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
 
     }
