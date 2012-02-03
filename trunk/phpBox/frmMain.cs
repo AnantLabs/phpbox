@@ -112,6 +112,7 @@ namespace phpBox
 
             Executer = new ScriptExecuter(PHPFile, ScriptPath, ScriptArguments);
             Executer.DataRecived += new ScriptExecuter.DataRecivedEventHandler(Executer_DataRecived);
+            Executer.ScriptStarted += new ScriptExecuter.ScriptStartedEventHandler(writeHeader);
             Executer.ScriptStopped += new ScriptExecuter.ScriptStoppedEventHandler(ScriptEnd);
             //Commands
             Executer.ChangeStatus_Old +=new ScriptExecuter.CommandEventHandler_Old(InvokeSetStatus_Old);
@@ -133,7 +134,7 @@ namespace phpBox
         }
         #endregion
 
-        
+        #region Stable functions
         private void writeHelpView()
         {
             txtOutput.Text += "Usage: phpBox [-r <file>] [-s <file>] [-p \"<parameter>\"]\n";
@@ -201,115 +202,6 @@ namespace phpBox
             }
         }
 
-        private void ExecuteScript()
-        {
-
-        }
-
-        private void StartScript()
-        {
-            #region check_inizialized
-            if (!File.Exists(ScriptPath))
-            {
-                if(String.IsNullOrWhiteSpace(ScriptPath))
-                    getFile(this, new EventArgs());
-                if (String.IsNullOrWhiteSpace(ScriptPath))
-                    return;
-            }
-
-            if (!File.Exists(PHPFile))
-            {
-                if (String.IsNullOrWhiteSpace(PHPFile) || PHPFile == @"php.exe")
-                {
-                    using (OpenFileDialog ofd = new OpenFileDialog())
-                    {
-                        ofd.Multiselect = false;
-                        ofd.Title = Application.ProductName + " - php.exe search";
-                        ofd.Filter = "PHP Executable (php.exe)|php.exe|All Files (*.*)|*.*";
-                        ofd.FilterIndex = 0;
-                        ofd.RestoreDirectory = true;
-                        if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                        {
-                            PHPFile = ofd.FileName;
-                        }
-                        else
-                        {
-                            return;
-                        }
-                    }
-                }
-            }
-            #endregion
-
-            SetCaption_Old(Path.GetFileName(ScriptPath));
-
-            Executer.PHPFile = PHPFile;
-            Executer.ScriptFile = ScriptPath;
-            Executer.ScriptArguments = ScriptArguments;
-            setExecuteBtn();
-            SetLogReadPropery_Old(true);
-            writeHeader();
-            SetProgress_Old("0");
-            Executer.Start();
-        }
-
-        private void ScriptEnd(StopReason reason)
-        {
-            switch (reason)
-            {
-                case StopReason.Executed:
-                case StopReason.Canceled:
-                    writeFooter();
-                    resetExecuteBtn();
-                    InvokeSetLogReadPropery_Old(false);
-                    InvokeSetProgress_Old("100");
-                    if (Executer.Exit) Application.Exit();
-                    break;
-                case StopReason.Error:
-                    resetExecuteBtn();
-                    InvokeSetLogReadPropery_Old(false);
-                    InvokeSetProgress_Old("100");
-                    break;
-            }
-        }
-
-        private void StopScript()
-        {
-            Executer.Stop();
-            ScriptEnd(StopReason.Canceled);
-        }
-
-        private void writeHeader()
-        {
-            ClearLog();
-            Color clr = Color.Gray;
-            InvokeWriteLogLine_Old("PHP Runtime:\t" + RuntimeVersion, clr);
-            InvokeWriteLogLine_Old("Script:\t" + Path.GetFileName(ScriptPath), clr);
-            InvokeWriteLogLine_Old("Parameter:\t" + (ScriptArguments.Length > 0 ? ScriptArguments : "-"), clr);
-            InvokeWriteLogLine_Old("Starttime:\t" + getTimeOfDay(DateTime.Now), clr);
-            InvokeWriteLogLine_Old("--------- Shell Output ---------", clr);
-        }
-
-        private void writeFooter()
-        {
-            Color clr = Color.Gray;
-            InvokeWriteLogLine_Old("--------------------------------", clr);
-            InvokeWriteLogLine_Old("Endtime:\t" + getTimeOfDay(DateTime.Now), clr);
-            InvokeWriteLogLine_Old("\t\t——————————————————", clr);
-            InvokeWriteLogLine_Old("\t\t" + lblExecTime.Text, clr);
-        }
-
-        private void setExecuteBtn()
-        {
-            btnExecute.Image = Icons.Stop;
-            btnExecute.Text = "Stop";
-        }
-
-        private void resetExecuteBtn()
-        {
-            btnExecute.Image = Icons.Start;
-            btnExecute.Text = "Start";
-        }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -391,11 +283,240 @@ namespace phpBox
             return string.Format(format[i], s);
         }
 
+        private void frmMain_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Escape)
+            {
+                if (Executer.IsRunning)
+                {
+                    Executer.Stop();
+                }
+                else
+                {
+                    Application.Exit();
+                }
+            }
+        }
+
+        private void txtOutput_TextChanged(object sender, EventArgs e)
+        {
+            if (txtOutput.ReadOnly || Executer.IsRunning)
+            {
+                txtOutput.SelectionStart = txtOutput.TextLength;
+                txtOutput.ScrollToCaret();
+            }
+        }
+
+        private void btnFile_Click(object sender, EventArgs e)
+        {
+            btnFile.ShowDropDown();
+        }
+
+        private void Executer_DataRecived(object sender, ScriptData e)
+        {
+            if (e.Type == ScriptDataType.Error)
+            {
+                InvokeWriteLogLine_Old("[ScriptError] " + e.Message, Color.Red);
+            }
+            else
+            {
+                InvokeWriteLogLine_Old(e.Message, Color.Black);
+            }
+        }
+
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!Executer.IsStoppable && Executer.IsRunning)
+            {
+                e.Cancel = true;
+            }
+
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+
+                if (Executer.IsRunning)
+                {
+                    Executer.Stop();
+                    e.Cancel = true;
+                }
+            }
+
+            this.Hide();
+
+            if (System.IO.File.Exists(Executer.ClearScriptFile))
+            {
+                ScriptExecuter sClean = new ScriptExecuter(PHPFile, Executer.ClearScriptFile, "");
+                sClean.Start();
+                while (sClean.IsRunning)
+                {
+                    Application.DoEvents();
+                }
+            }
+
+            IniFile.Save(file);
+
+            if (AutoUpdater.NewUpdate)
+            {
+                while (AutoUpdater.Status == UpdateStatus.Downloading)
+                {
+                    Application.DoEvents();
+                }
+                AutoUpdater.StartUpdate();
+            }
+        }
+
+        private void frmMain_Load(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(ScriptPath))
+            {
+                StartScript();
+            }
+
+            AutoUpdater.Update();
+        }
+
+        private void txtFilePath_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            txtFilePath.Text = files[0];
+        }
+
+        private void txtFilePath_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Link;
+        }
+
+        private void txtOutput_SelectionChanged(object sender, EventArgs e)
+        {
+            lblSelCount.Text = "Sel: " + txtOutput.SelectedText.Length;
+        }
+
+        private void frmMain_ResizeEnd(object sender, EventArgs e)
+        {
+            txtOutput.ScrollToCaret();
+        }
+        #endregion
+
+        private void StartScript()
+        {
+            #region check_inizialized
+            if (!File.Exists(ScriptPath))
+            {
+                if(String.IsNullOrWhiteSpace(ScriptPath))
+                    getFile(this, new EventArgs());
+                if (String.IsNullOrWhiteSpace(ScriptPath))
+                    return;
+            }
+
+            if (!File.Exists(PHPFile))
+            {
+                if (String.IsNullOrWhiteSpace(PHPFile) || PHPFile == @"php.exe")
+                {
+                    using (OpenFileDialog ofd = new OpenFileDialog())
+                    {
+                        ofd.Multiselect = false;
+                        ofd.Title = Application.ProductName + " - php.exe search";
+                        ofd.Filter = "PHP Executable (php.exe)|php.exe|All Files (*.*)|*.*";
+                        ofd.FilterIndex = 0;
+                        ofd.RestoreDirectory = true;
+                        if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            PHPFile = ofd.FileName;
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            SetCaption_Old(Path.GetFileName(ScriptPath));
+
+            Executer.PHPFile = PHPFile;
+            Executer.ScriptFile = ScriptPath;
+            Executer.ScriptArguments = ScriptArguments;
+            setExecuteBtn();
+            SetLogReadPropery_Old(true);
+            SetProgress_Old("0");
+            Executer.Start();
+        }
+
+        private void ScriptEnd(StopReason reason)
+        {
+            switch (reason)
+            {
+                case StopReason.Executed:
+                case StopReason.Canceled:
+                    writeFooter();
+                    resetExecuteBtn();
+                    InvokeSetLogReadPropery_Old(false);
+                    InvokeSetProgress_Old("100");
+                    if (Executer.Exit) Application.Exit();
+                    break;
+                case StopReason.Error:
+                    resetExecuteBtn();
+                    InvokeSetLogReadPropery_Old(false);
+                    InvokeSetProgress_Old("100");
+                    break;
+            }
+        }
+
+        private bool StopScript()
+        {
+            if (Executer.Stop())
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void writeHeader()
+        {
+            InvokeClearLog_Old();
+            Color clr = Color.Gray;
+            InvokeWriteLogLine_Old("PHP Runtime:\t" + RuntimeVersion, clr);
+            InvokeWriteLogLine_Old("Script:\t" + Path.GetFileName(ScriptPath), clr);
+            InvokeWriteLogLine_Old("Parameter:\t" + (ScriptArguments.Length > 0 ? ScriptArguments : "-"), clr);
+            InvokeWriteLogLine_Old("Starttime:\t" + getTimeOfDay(Executer.StartTime), clr);
+            InvokeWriteLogLine_Old("--------- Shell Output ---------", clr);
+        }
+
+        private void writeFooter()
+        {
+            Color clr = Color.Gray;
+            InvokeWriteLogLine_Old("--------------------------------", clr);
+            InvokeWriteLogLine_Old("Endtime:\t" + getTimeOfDay(Executer.StopTime), clr);
+            InvokeWriteLogLine_Old("\t\t——————————————————", clr);
+            if (Executer.ExitReason == ExitType.Finished)
+            {
+                InvokeWriteLogLine_Old("\t\t" + getTimeOfDay(Executer.RunTime), clr);
+            }
+            else
+            {
+                InvokeWriteLogLine_Old("\t\t" + getTimeOfDay(Executer.RunTime), Color.Red);
+            }
+        }
+
+        private void setExecuteBtn()
+        {
+            btnExecute.Image = Icons.Stop;
+            btnExecute.Text = "Stop";
+        }
+
+        private void resetExecuteBtn()
+        {
+            btnExecute.Image = Icons.Start;
+            btnExecute.Text = "Start";
+        }
+
         private void viewUpdater_Tick(object sender, EventArgs e)
         {
-            if (Executer.IsExecuting)
+            #region Stable part
+            if (Executer.IsRunning)
             {
-                lblExecTime.Text = getTimeOfDay(DateTime.Now.Subtract(Executer.StartTime));
+                lblExecTime.Text = getTimeOfDay(Executer.RunTime);
             }
 
             if ((!Executer.IsStartable && btnExecute.Text == "Start") || (!Executer.IsStoppable && btnExecute.Text != "Start"))
@@ -426,8 +547,7 @@ namespace phpBox
                 txtFilePath.Enabled = true;
                 btnGetFile.Enabled = true;
             }
-
-
+            #endregion
 
             try
             {
@@ -435,16 +555,16 @@ namespace phpBox
                 {
                     if (IsKeyPushedDown(Keys.F5))
                     {
-                        if (Executer.IsExecuting) 
+                        if (Executer.IsRunning && StopScript())
                         {
-                                Executer.Stop(); 
+                            setExecuteBtn();
+                            StartScript();
                         }
-                        while (Executer.IsExecuting)
+                        else
                         {
-                            Application.DoEvents();
+                            setExecuteBtn();
+                            StartScript();
                         }
-                        setExecuteBtn();
-                        StartScript();
                     }
                 }
             }
@@ -454,57 +574,25 @@ namespace phpBox
             }
         }
 
-        private void frmMain_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Escape)
-            {
-                if (Executer.IsExecuting)
-                {
-                    Executer.Stop();
-                }
-                else
-                {
-                    Application.Exit();
-                }
-            }
-        }
-
-        private void txtOutput_TextChanged(object sender, EventArgs e)
-        {
-            if (txtOutput.ReadOnly || Executer.IsExecuting)
-            {
-                txtOutput.SelectionStart = txtOutput.TextLength;
-                txtOutput.ScrollToCaret();
-            }
-        }
-
-        private void btnFile_Click(object sender, EventArgs e)
-        {
-            btnFile.ShowDropDown();
-        }
-
-        private void Executer_DataRecived(object sender, ScriptData e)
-        {
-            if (e.Type == ScriptDataType.Error)
-            {
-                InvokeWriteLogLine_Old("[ScriptError] " + e.Message, Color.Red);
-            }
-            else
-            {
-                InvokeWriteLogLine_Old(e.Message, Color.Black);
-            }
-        }
-
         #region Delegates
-        private void ClearLog()
+        public delegate void RaisFunction_Old();
+        private void ClearLog_Old()
         {
             txtOutput.Text = "";
+        }
+        private void InvokeClearLog_Old()
+        {
+            this.Invoke(new RaisFunction_Old(ClearLog_Old));
         }
 
         #region Old
         private void InvokeWriteLogLine_Old(string Message, Color clr)
         {
-            this.BeginInvoke(new WriteLogLineHandle_Old(WriteLogLine_Old), Message, clr);
+            try
+            {
+                this.BeginInvoke(new WriteLogLineHandle_Old(WriteLogLine_Old), Message, clr);
+            }
+            catch{} 
         }
         public delegate void WriteLogLineHandle_Old(string Message, Color clr);
         private void WriteLogLine_Old(string Message, Color clr)
@@ -597,72 +685,5 @@ namespace phpBox
         }
         #endregion
         #endregion
-
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (!Executer.IsStoppable && Executer.IsExecuting)
-            {
-                e.Cancel = true;
-            }
-
-            if (e.CloseReason == CloseReason.UserClosing)
-            {
-
-                if (Executer.IsExecuting)
-                {
-                    Executer.Stop();
-                    e.Cancel = true;
-                }
-            }
-
-            this.Hide();
-
-            if (System.IO.File.Exists(Executer.ClearScriptFile))
-            {
-                ScriptExecuter sClean = new ScriptExecuter(PHPFile, Executer.ClearScriptFile, "");
-                sClean.Start();
-                while (sClean.IsExecuting)
-                {
-                    Application.DoEvents();
-                }
-            }
-
-            IniFile.Save(file);
-
-            if (AutoUpdater.NewUpdate)
-            {
-                while (AutoUpdater.Status == UpdateStatus.Downloading)
-                {
-                    Application.DoEvents();
-                }
-                AutoUpdater.StartUpdate();
-            }
-        }
-
-        private void frmMain_Load(object sender, EventArgs e)
-        {
-            if (!String.IsNullOrEmpty(ScriptPath))
-            {
-                StartScript();
-            }
-
-            AutoUpdater.Update();
-        }
-
-        private void txtFilePath_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            txtFilePath.Text = files[0];
-        }
-
-        private void txtFilePath_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Link;
-        }
-
-        private void txtOutput_SelectionChanged(object sender, EventArgs e)
-        {
-            lblSelCount.Text = "Sel: " + txtOutput.SelectedText.Length;
-        }
     }
 }

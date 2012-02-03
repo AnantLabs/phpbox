@@ -20,14 +20,19 @@ namespace phpBox
         ,Code
     }
 
+    public enum ExitType
+    {
+        None = 0xff,
+        Finished = 0,
+        Killed = -1
+    }
+
     public class ScriptExecuter
     {
-
         protected Thread myThread { get; set; }
         protected ProcessStartInfo myStartInfo{ get; set; }
         protected Process myProcess { get; set; }
 
-        public bool IsExecuting { get; set; }
         public bool IsRunning
         {
             get
@@ -109,11 +114,61 @@ namespace phpBox
         public Regex MatchCommandOld { get; set; }
         public Regex MatchCommand { get; set; }
 
-        public DateTime StartTime { get; set; }
+        private DateTime _StartTime = DateTime.Today;
+        public DateTime StartTime { 
+            get 
+            {
+                if (IsRunning)
+                    return myProcess.StartTime;
+                else
+                    return _StartTime; 
+            }
+            protected set
+            {
+                _StartTime = value;
+            }
+        }
+
+        public DateTime StopTime
+        {
+            get
+            {
+                try
+                {
+                    return myProcess.ExitTime;
+                }
+                catch
+                {
+                    return DateTime.Now;
+                }
+            }
+        }
+
+        public TimeSpan RunTime
+        {
+            get
+            {
+                return StopTime.Subtract(StartTime);
+            }
+        }
+
+        public ExitType ExitReason
+        {
+            get
+            {
+                try
+                {
+                    return (ExitType)myProcess.ExitCode;
+                }
+                catch
+                {
+                    return ExitType.None;
+                }
+            }
+        }
 
         public ScriptExecuter(string PHPFile, string ScriptFile, string ScriptArguments)
         {
-            IsExecuting = false;
             IsStoppable = true;
             IsStartable = true;
             EditableParameter = true;
@@ -128,15 +183,12 @@ namespace phpBox
             this.ScriptArguments = ScriptArguments;
 
             this.Execute = ExecuteType.File;
-
-            this.StartTime = DateTime.Now;
         }
 
 
         public void Start()
         {
             if (!IsStartable) return;
-            if(IsRunning) Stop();
             myThread = new Thread(runProcess);
             myThread.Name = "phpBox - Script Executer";
             myThread.IsBackground = true;
@@ -144,17 +196,20 @@ namespace phpBox
             myThread.Start();
         }
 
-
-        public void Stop(StopReason reason = StopReason.Canceled)
+        public bool Stop(StopReason reason = StopReason.Canceled)
         {
-            if (!IsStoppable || myProcess == null) return;
+            if (!IsStoppable) return false;
             try
             {
                 if (!myProcess.HasExited)
                 {
                     myProcess.Kill();
                     myProcess.Dispose();
-                } 
+                    while (IsRunning)
+                    {
+                    }
+                    return true;
+                }
             }
             finally
             {
@@ -164,10 +219,16 @@ namespace phpBox
                 }
                 finally
                 {
-                    IsExecuting = false;
-                    ScriptStopped(reason);
+                    try
+                    {
+                        ScriptStopped(reason);
+                    }
+                    finally
+                    {
+                    }
                 }
             }
+            return true;
         }
 
         protected void OnProcessDataRecived(object sender, DataReceivedEventArgs e)
@@ -231,11 +292,14 @@ namespace phpBox
                 myProcess.ErrorDataReceived += new DataReceivedEventHandler(OnProcessErrorRecived);
 
                 myProcess.Start();
-                this.StartTime = DateTime.Now;
-
+                try
+                {
+                    ScriptStarted();
+                }
+                catch {}
+                StartTime = myProcess.StartTime;
                 if (!myProcess.HasExited)
                 {
-                    IsExecuting = true;
                     myProcess.BeginErrorReadLine();
                     myProcess.BeginOutputReadLine();
                     myProcess.WaitForExit();
@@ -243,7 +307,8 @@ namespace phpBox
 
                 try
                 {
-                    ScriptStopped(StopReason.Executed);
+                    if(myProcess.ExitCode == (int)ExitType.Finished)
+                        ScriptStopped(StopReason.Executed);
                 }
                 catch
                 {
@@ -251,7 +316,6 @@ namespace phpBox
             }
             finally
             {
-                IsExecuting = false;
             }
         }
 
@@ -325,6 +389,9 @@ namespace phpBox
 
         public event DataRecivedEventHandler DataRecived;
         public delegate void DataRecivedEventHandler(object sender, ScriptData e);
+
+        public event ScriptStartedEventHandler ScriptStarted;
+        public delegate void ScriptStartedEventHandler();
 
         public event ScriptStoppedEventHandler ScriptStopped;
         public delegate void ScriptStoppedEventHandler(StopReason reason);
