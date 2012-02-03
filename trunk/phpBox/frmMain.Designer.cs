@@ -270,7 +270,7 @@
             // lblExecTime
             // 
             this.lblExecTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblExecTime.Location = new System.Drawing.Point(-2, 535);
+            this.lblExecTime.Location = new System.Drawing.Point(-2, 534);
             this.lblExecTime.Name = "lblExecTime";
             this.lblExecTime.Size = new System.Drawing.Size(70, 21);
             this.lblExecTime.TabIndex = 4;
@@ -281,15 +281,17 @@
             // 
             this.pbProgress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbProgress.Location = new System.Drawing.Point(69, 535);
+            this.pbProgress.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.pbProgress.Location = new System.Drawing.Point(69, 534);
             this.pbProgress.Name = "pbProgress";
             this.pbProgress.Size = new System.Drawing.Size(399, 18);
+            this.pbProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.pbProgress.TabIndex = 5;
             // 
             // lblPercent
             // 
             this.lblPercent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblPercent.Location = new System.Drawing.Point(468, 535);
+            this.lblPercent.Location = new System.Drawing.Point(468, 534);
             this.lblPercent.Name = "lblPercent";
             this.lblPercent.Size = new System.Drawing.Size(34, 18);
             this.lblPercent.TabIndex = 6;
