@@ -9,6 +9,12 @@ namespace phpBox
         public About()
         {
             InitializeComponent();
+
+            if (!viewAbout.IsOffline)
+            {
+                viewAbout.Refresh();
+            }
+
             this.Text = String.Format("Info über {0}", AssemblyTitle);
             while (viewAbout.ReadyState != WebBrowserReadyState.Complete)
             {
@@ -25,6 +31,8 @@ namespace phpBox
                 Application.DoEvents();
             }
             viewAbout.Navigating += new WebBrowserNavigatingEventHandler(viewAbout_Navigating);
+
+            viewAbout.Document.GetElementById("closeAbout").Click += new HtmlElementEventHandler(Close_Click);
         }
 
         #region Assemblyattributaccessoren
@@ -114,6 +122,11 @@ namespace phpBox
         private void About_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape) this.Close();
+        }
+
+        private void Close_Click(object sender, HtmlElementEventArgs e)
+        {
+            this.Close();
         }
     }
 }
