@@ -41,6 +41,7 @@
             // 
             // viewAbout
             // 
+            this.viewAbout.AllowWebBrowserDrop = false;
             this.viewAbout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.viewAbout.IsWebBrowserContextMenuEnabled = false;
             this.viewAbout.Location = new System.Drawing.Point(0, 0);
