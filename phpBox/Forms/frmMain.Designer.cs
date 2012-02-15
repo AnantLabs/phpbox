@@ -47,16 +47,24 @@
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.tpParameter = new System.Windows.Forms.TabPage();
             this.txtGetParameter = new System.Windows.Forms.TextBox();
+            this.tpStartParameter = new System.Windows.Forms.TabPage();
+            this.txtStartParameter = new System.Windows.Forms.TextBox();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
             this.viewUpdater = new System.Windows.Forms.Timer(this.components);
             this.lblExecTime = new System.Windows.Forms.Label();
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.lblPercent = new System.Windows.Forms.Label();
+            this.mainConMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainStatus.SuspendLayout();
             this.mainTools.SuspendLayout();
             this.mainTabs.SuspendLayout();
             this.tpScriptFile.SuspendLayout();
             this.tpParameter.SuspendLayout();
+            this.tpStartParameter.SuspendLayout();
+            this.mainConMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainStatus
@@ -65,28 +73,31 @@
             this.lblStatus,
             this.ToolStripStatusSeparator1,
             this.lblSelCount});
-            this.mainStatus.Location = new System.Drawing.Point(0, 555);
+            this.mainStatus.Location = new System.Drawing.Point(0, 556);
             this.mainStatus.Name = "mainStatus";
-            this.mainStatus.Size = new System.Drawing.Size(502, 23);
+            this.mainStatus.Size = new System.Drawing.Size(502, 22);
             this.mainStatus.TabIndex = 0;
             this.mainStatus.Text = "Status";
             // 
             // lblStatus
             // 
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(94, 18);
+            this.lblStatus.Size = new System.Drawing.Size(94, 17);
             this.lblStatus.Text = "phpBox - welcome";
             // 
             // ToolStripStatusSeparator1
             // 
             this.ToolStripStatusSeparator1.Name = "ToolStripStatusSeparator1";
             this.ToolStripStatusSeparator1.Size = new System.Drawing.Size(6, 23);
+            this.ToolStripStatusSeparator1.Visible = false;
             // 
             // lblSelCount
             // 
             this.lblSelCount.Name = "lblSelCount";
-            this.lblSelCount.Size = new System.Drawing.Size(34, 18);
+            this.lblSelCount.Size = new System.Drawing.Size(34, 17);
             this.lblSelCount.Text = "Sel: 0";
+            this.lblSelCount.Visible = false;
+            this.lblSelCount.TextChanged += new System.EventHandler(this.lblSelCount_TextChanged);
             // 
             // mainTools
             // 
@@ -127,7 +138,7 @@
             // 
             this.aboutToolStripMenuItem.Image = global::phpBox.Icons.About;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "About phpBox";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
@@ -136,7 +147,7 @@
             // 
             this.exitToolStripMenuItem.Image = global::phpBox.Icons.Exit;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.ToolTipText = "Close phpBox";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
@@ -174,6 +185,7 @@
             this.mainTabs.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.mainTabs.Controls.Add(this.tpScriptFile);
             this.mainTabs.Controls.Add(this.tpParameter);
+            this.mainTabs.Controls.Add(this.tpStartParameter);
             this.mainTabs.Location = new System.Drawing.Point(-5, 2);
             this.mainTabs.Margin = new System.Windows.Forms.Padding(3, 7, 3, 3);
             this.mainTabs.Name = "mainTabs";
@@ -210,6 +222,8 @@
             this.txtFilePath.AllowDrop = true;
             this.txtFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtFilePath.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.txtFilePath.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystem;
             this.txtFilePath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtFilePath.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtFilePath.Location = new System.Drawing.Point(2, 3);
@@ -220,6 +234,7 @@
             this.txtFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragDrop);
             this.txtFilePath.DragEnter += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragEnter);
             this.txtFilePath.DoubleClick += new System.EventHandler(this.getFile);
+            this.txtFilePath.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilePath_KeyDown);
             // 
             // tpParameter
             // 
@@ -244,17 +259,44 @@
             this.txtGetParameter.Size = new System.Drawing.Size(500, 23);
             this.txtGetParameter.TabIndex = 1;
             // 
+            // tpStartParameter
+            // 
+            this.tpStartParameter.Controls.Add(this.txtStartParameter);
+            this.tpStartParameter.Location = new System.Drawing.Point(4, 25);
+            this.tpStartParameter.Name = "tpStartParameter";
+            this.tpStartParameter.Padding = new System.Windows.Forms.Padding(3);
+            this.tpStartParameter.Size = new System.Drawing.Size(506, 27);
+            this.tpStartParameter.TabIndex = 2;
+            this.tpStartParameter.Text = "Start Parameter";
+            this.tpStartParameter.UseVisualStyleBackColor = true;
+            // 
+            // txtStartParameter
+            // 
+            this.txtStartParameter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtStartParameter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtStartParameter.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtStartParameter.Location = new System.Drawing.Point(2, 3);
+            this.txtStartParameter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 3);
+            this.txtStartParameter.Name = "txtStartParameter";
+            this.txtStartParameter.Size = new System.Drawing.Size(500, 23);
+            this.txtStartParameter.TabIndex = 2;
+            this.txtStartParameter.Text = "-f \"%s\" -- \"%p\"";
+            // 
             // txtOutput
             // 
+            this.txtOutput.AcceptsTab = true;
             this.txtOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtOutput.AutoWordSelection = true;
             this.txtOutput.BackColor = System.Drawing.Color.White;
             this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtOutput.ContextMenuStrip = this.mainConMenu;
             this.txtOutput.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtOutput.Location = new System.Drawing.Point(0, 86);
             this.txtOutput.Name = "txtOutput";
+            this.txtOutput.ShowSelectionMargin = true;
             this.txtOutput.Size = new System.Drawing.Size(502, 447);
             this.txtOutput.TabIndex = 3;
             this.txtOutput.Text = "";
@@ -264,7 +306,6 @@
             // viewUpdater
             // 
             this.viewUpdater.Enabled = true;
-            this.viewUpdater.Interval = 45;
             this.viewUpdater.Tick += new System.EventHandler(this.viewUpdater_Tick);
             // 
             // lblExecTime
@@ -298,6 +339,33 @@
             this.lblPercent.Text = "0%";
             this.lblPercent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // mainConMenu
+            // 
+            this.mainConMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyToolStripMenuItem,
+            this.cutToolStripMenuItem,
+            this.pasteToolStripMenuItem});
+            this.mainConMenu.Name = "mainConMenu";
+            this.mainConMenu.Size = new System.Drawing.Size(113, 70);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.copyToolStripMenuItem.Text = "Copy";
+            // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.cutToolStripMenuItem.Text = "Cut";
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.pasteToolStripMenuItem.Text = "Paste";
+            // 
             // frmMain
             // 
             this.AllowDrop = true;
@@ -311,6 +379,7 @@
             this.Controls.Add(this.mainTabs);
             this.Controls.Add(this.mainTools);
             this.Controls.Add(this.mainStatus);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(275, 305);
@@ -318,10 +387,13 @@
             this.Text = "phpBox";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
+            this.Shown += new System.EventHandler(this.frmMain_CreateJumpList);
             this.ResizeEnd += new System.EventHandler(this.frmMain_ResizeEnd);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragEnter);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.frmMain_KeyPress);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyUp);
             this.mainStatus.ResumeLayout(false);
             this.mainStatus.PerformLayout();
             this.mainTools.ResumeLayout(false);
@@ -331,6 +403,9 @@
             this.tpScriptFile.PerformLayout();
             this.tpParameter.ResumeLayout(false);
             this.tpParameter.PerformLayout();
+            this.tpStartParameter.ResumeLayout(false);
+            this.tpStartParameter.PerformLayout();
+            this.mainConMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -360,6 +435,12 @@
         private System.Windows.Forms.ToolStripButton btnTopMost;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton btnExecute;
+        private System.Windows.Forms.TabPage tpStartParameter;
+        private System.Windows.Forms.TextBox txtStartParameter;
+        private System.Windows.Forms.ContextMenuStrip mainConMenu;
+        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
 
     }
 }

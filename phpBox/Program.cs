@@ -17,7 +17,24 @@ namespace phpBox
             }
         }
 
+        private static AppDomain myDomain = AppDomain.CurrentDomain;
+
         public static string AppDirectory { get; private set; }
+
+        private static System.Reflection.Assembly myDomain_AssemblyResolve(object sender, ResolveEventArgs e)
+        {
+            if (e.Name.Contains("Microsoft.WindowsAPICodePack.Shell"))
+            {
+                return System.Reflection.Assembly.Load(Libs.Microsoft_WindowsAPICodePack_Shell);
+            }
+
+            if (e.Name.Contains("Microsoft.WindowsAPICodePack"))
+            {
+                return System.Reflection.Assembly.Load(Libs.Microsoft_WindowsAPICodePack);
+            }
+            
+            return null;
+        }
 
         /// <summary>
         /// Der Haupteinstiegspunkt für die Anwendung.
@@ -25,6 +42,8 @@ namespace phpBox
         [STAThread]
         static void Main()
         {
+            myDomain.AssemblyResolve += new ResolveEventHandler(myDomain_AssemblyResolve);
+
                 AppDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\phpBox";
                 if (!Directory.Exists(AppDirectory))
                 {

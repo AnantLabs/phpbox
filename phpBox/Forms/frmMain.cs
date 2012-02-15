@@ -3,21 +3,15 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Microsoft.WindowsAPICodePack.Taskbar;
+using Microsoft.WindowsAPICodePack.Shell;
+
 #endregion
 namespace phpBox
 {
     public partial class frmMain : Form
     {
-        #region WinAPI
-        
-        public static bool IsKeyPushedDown(Keys vKey)
-        {
-            return 0 != (Win32.GetAsyncKeyState((int)vKey) & 0x8000);
-        }
-        #endregion
-
         #region Fields
 
         private string file = Program.AppDirectory + @"\settings.ini";
@@ -26,7 +20,7 @@ namespace phpBox
         {
             set
             {
-                
+
                 txtFilePath.Text = value;
             }
             get
@@ -73,14 +67,26 @@ namespace phpBox
                 return lblStatus.Text;
             }
         }
-        public string RuntimeVersion 
-        { 
-            get 
+        public string RuntimeVersion
+        {
+            get
             {
                 return FileVersionInfo.GetVersionInfo(PHPFile).FileVersion;
-            } 
+            }
+        }
+        public string StartParameter
+        {
+            get
+            {
+                return txtStartParameter.Text;
+            }
+            set
+            {
+                txtStartParameter.Text = value;
+            }
         }
 
+        public bool IsShown { get; set; }
 
         public ScriptExecuter Executer { get; set; }
         public Updater AutoUpdater { get; set; }
@@ -97,12 +103,12 @@ namespace phpBox
             string r, s, p, d;
 
             r = Arguments.GetValue("r", "runtime");
-            s = Arguments.GetValue("s", "script");
+            s = Arguments.GetValue("s", "home");
             p = Arguments.GetValue("p", "parameter");
 
             d = Arguments.GetValueOf(1);
             if (!String.IsNullOrEmpty(d) && !d.StartsWith("-") && String.IsNullOrEmpty(s)) s = d;
-            
+
 
             if (!String.IsNullOrEmpty(Arguments.GetValue("h", "help"))) writeHelpView();
 
@@ -115,7 +121,7 @@ namespace phpBox
             Executer.ScriptStarted += new ScriptExecuter.ScriptStartedEventHandler(writeHeader);
             Executer.ScriptStopped += new ScriptExecuter.ScriptStoppedEventHandler(ScriptEnd);
             //Commands
-            Executer.ChangeStatus_Old +=new ScriptExecuter.CommandEventHandler_Old(InvokeSetStatus_Old);
+            Executer.ChangeStatus_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeSetStatus_Old);
             Executer.ChangeCaption_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeSetCaption_Old);
 
             Executer.ReportProgress_Old += new ScriptExecuter.CommandEventHandler_Old(InvokeSetProgress_Old);
@@ -128,10 +134,6 @@ namespace phpBox
             AutoUpdater = new Updater(@"http://code.google.com/feeds/p/phpbox/downloads/basic/");
             AutoUpdater.UpdateReport += new Updater.UpdateReportHandler(updateStatusChanged);
         }
-
-        ~frmMain()
-        {
-        }
         #endregion
 
         #region Stable functions
@@ -142,11 +144,13 @@ namespace phpBox
             txtOutput.Text += "  -r <file>\t\tPHP runtime file with path (php.exe)\n";
             txtOutput.Text += "  -runtime <file>\n\n";
 
-            txtOutput.Text += "  -s <file>\t\tPHP script file with path (*.php)\n";
-            txtOutput.Text += "  -script <file>\n\n";
+            txtOutput.Text += "  -s <file>\t\tPHP home file with path (*.php)\n";
+            txtOutput.Text += "  -home <file>\n\n";
 
-            txtOutput.Text += "  -p \"<parameter>\"\tPHP script parameter (name=value&namen=valuen)\n";
+            txtOutput.Text += "  -p \"<parameter>\"\tPHP home parameter (name=value&namen=valuen)\n";
             txtOutput.Text += "  -parameter \"<parameter>\"\n\n";
+
+            txtOutput.Text += "  -nostart\tStarts phpBox without starting the script.\n";
         }
 
         private void updateStatusChanged(UpdateStatus status)
@@ -363,11 +367,15 @@ namespace phpBox
                 }
                 AutoUpdater.StartUpdate();
             }
+
+            if(Executer.IsRunning) StopScript();
+
+            Environment.Exit((int)e.CloseReason);
         }
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(ScriptPath))
+            if (!String.IsNullOrEmpty(ScriptPath) && !Convert.ToBoolean(Arguments.GetValue("nostart")))
             {
                 StartScript();
             }
@@ -402,7 +410,7 @@ namespace phpBox
             #region check_inizialized
             if (!File.Exists(ScriptPath))
             {
-                if(String.IsNullOrWhiteSpace(ScriptPath))
+                if (String.IsNullOrWhiteSpace(ScriptPath))
                     getFile(this, new EventArgs());
                 if (String.IsNullOrWhiteSpace(ScriptPath))
                     return;
@@ -437,6 +445,7 @@ namespace phpBox
             Executer.PHPFile = PHPFile;
             Executer.ScriptFile = ScriptPath;
             Executer.ScriptArguments = ScriptArguments;
+            Executer.StartParameter = StartParameter;
             setExecuteBtn();
             SetLogReadPropery_Old(true);
             SetProgress_Old("0");
@@ -548,30 +557,6 @@ namespace phpBox
                 btnGetFile.Enabled = true;
             }
             #endregion
-
-            try
-            {
-                if (Win32.GetForegroundWindow() == this.Handle)
-                {
-                    if (IsKeyPushedDown(Keys.F5))
-                    {
-                        if (Executer.IsRunning && StopScript())
-                        {
-                            setExecuteBtn();
-                            StartScript();
-                        }
-                        else
-                        {
-                            setExecuteBtn();
-                            StartScript();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Call.Error(ex);
-            }
         }
 
         #region Delegates
@@ -592,18 +577,25 @@ namespace phpBox
             {
                 this.BeginInvoke(new WriteLogLineHandle_Old(WriteLogLine_Old), Message, clr);
             }
-            catch{} 
+            catch { }
         }
         public delegate void WriteLogLineHandle_Old(string Message, Color clr);
         private void WriteLogLine_Old(string Message, Color clr)
         {
-            Color oclr = txtOutput.SelectionColor;
-            txtOutput.SelectionColor = clr;
-            txtOutput.AppendText(Message + "\n");
-            txtOutput.SelectionColor = oclr;
+            try
+            {
+                Color oclr = txtOutput.SelectionColor;
+                txtOutput.SelectionColor = clr;
+                txtOutput.AppendText(Message + "\n");
+                txtOutput.SelectionColor = oclr;
+            }
+            catch (Exception ex)
+            {
+                Call.Error(ex);
+            }
         }
 
-        
+
 
 
         public delegate void ChangeBoolValue_Old(bool value);
@@ -618,7 +610,7 @@ namespace phpBox
             this.Invoke(new ChangeBoolValue_Old(SetLogReadPropery_Old), value);
         }
 
-        
+
         private void SetStatus_Old(string text)
         {
             Status = text;
@@ -635,12 +627,16 @@ namespace phpBox
         }
         private void InvokeShowNotice_Old(string msg)
         {
-            this.Invoke(new ChangeStringValue_Old(ShowNotice_Old), msg);  
+            this.Invoke(new ChangeStringValue_Old(ShowNotice_Old), msg);
         }
 
         private void ShowError_Old(string msg)
         {
             WriteLogLine_Old("[Error] " + msg, Color.Red);
+            if (TaskbarManager.IsPlatformSupported)
+            {
+                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Error);
+            }
             MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         private void InvokeShowError_Old(string msg)
@@ -664,6 +660,11 @@ namespace phpBox
                 int val = Convert.ToInt32(value);
                 pbProgress.Value = val;
                 lblPercent.Text = value + "%";
+                if (TaskbarManager.IsPlatformSupported && this.IsShown)
+                {
+                    TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
+                    TaskbarManager.Instance.SetProgressValue(val, 100);
+                }
             }
             catch (Exception ex)
             {
@@ -685,5 +686,89 @@ namespace phpBox
         }
         #endregion
         #endregion
+
+        private void frmMain_CreateJumpList(object sender, EventArgs e)
+        {
+            if (TaskbarManager.IsPlatformSupported)
+            {
+                try
+                {
+                    JumpList list = JumpList.CreateJumpList();
+                    JumpListCustomCategory home = new JumpListCustomCategory("phpBox - Home");
+                    JumpListLink mainFolder = new JumpListLink(Program.AppDirectory, "AppData");
+                    mainFolder.IconReference = new IconReference(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "imageres.dll"), 3);
+                    home.AddJumpListItems(mainFolder);
+
+                    if(Directory.Exists(Path.GetDirectoryName(PHPFile)))
+                    {
+                        JumpListLink runtimeFolder = new JumpListLink(Path.GetDirectoryName(PHPFile), "PHP Runtime");
+                        runtimeFolder.IconReference = new IconReference(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "imageres.dll"), 3);
+                        home.AddJumpListItems(runtimeFolder);
+                    }
+                    
+                    list.AddCustomCategories(home);
+                    list.Refresh();
+                }
+                catch (Exception ex)
+                {
+                    Call.Error(ex);
+                }
+            }
+            this.IsShown = true;
+        }
+
+        private bool _isPushed = false;
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                    if (e.KeyCode == Keys.F5 && !_isPushed)
+                    {
+                        if (Executer.IsRunning && StopScript())
+                        {
+                            setExecuteBtn();
+                            StartScript();
+                        }
+                        else
+                        {
+                            setExecuteBtn();
+                            StartScript();
+                        }
+                        _isPushed = true;
+                    }
+            }
+            catch (Exception ex)
+            {
+                Call.Error(ex);
+            }
+        }
+        private void frmMain_KeyUp(object sender, KeyEventArgs e)
+        {
+            _isPushed = false;
+        }
+
+        private void lblSelCount_TextChanged(object sender, EventArgs e)
+        {
+            if (lblSelCount.Text == "Sel: 0")
+            {
+                lblSelCount.Visible = false;
+                ToolStripStatusSeparator1.Visible = false;
+            }
+            else
+            {
+                lblSelCount.Visible = true;
+                ToolStripStatusSeparator1.Visible = true;
+
+            }
+        }
+
+        private void txtFilePath_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                if (ScriptPath.Length > 0) ScriptPath = ""; 
+                else frmMain_KeyPress(sender, new KeyPressEventArgs((char)e.KeyCode));
+            }
+        }
     }
 }

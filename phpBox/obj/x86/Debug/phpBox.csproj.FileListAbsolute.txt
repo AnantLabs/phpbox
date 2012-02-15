@@ -42,3 +42,7 @@ C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.Icons.resources
 C:\SVN\phpBox\phpBox\obj\x86\Debug\phpBox.Properties.Resources.resources
 C:\SVN\phpBox\phpBox\obj\x86\Debug\GenerateResource.read.1.tlog
 C:\SVN\phpBox\phpBox\obj\x86\Debug\GenerateResource.write.1.tlog
+D:\Dropbox\C#\phpBox\phpBox\obj\x86\Debug\phpBox.About.resources
+D:\Dropbox\C#\phpBox\phpBox\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+D:\Dropbox\C#\phpBox\phpBox\bin\Debug\Microsoft.WindowsAPICodePack.dll
+D:\Dropbox\C#\phpBox\phpBox\obj\x86\Debug\phpBox.Libs.resources

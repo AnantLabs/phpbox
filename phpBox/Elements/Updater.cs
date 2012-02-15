@@ -19,6 +19,12 @@ namespace phpBox
         Failed
     }
 
+    public enum Channels
+    {
+        Stable,
+        Dev
+    }
+
     public class Updater
     {
         protected string file = Program.AppDirectory + @"\update.ini";
@@ -96,6 +102,8 @@ namespace phpBox
                         string updPath = Program.AppDirectory + @"\" + Path.GetFileName(appPath);
                         string ubtPath = Program.AppDirectory + @"\update.bat";
 
+                        if (File.Exists(updPath)) File.Delete(updPath);
+
                         myDownloader = new WebClient();
                         myDownloader.DownloadFile(mt.Groups[2].Value, updPath);
 
@@ -110,6 +118,8 @@ namespace phpBox
                         cmd += "move \"" + updPath + "\" \"" + appPath + "\"\n";    //Move updated file
                         cmd += "echo phpBox updated successfully!\n";
                         cmd += "del \"" + ubtPath + "\"\n";                         //Delete update batch file
+
+                        if (File.Exists(ubtPath)) File.Delete(ubtPath);
 
                         File.WriteAllText(ubtPath, cmd);
 
