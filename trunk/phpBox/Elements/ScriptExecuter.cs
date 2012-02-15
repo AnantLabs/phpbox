@@ -73,8 +73,24 @@ namespace phpBox
             }
         }
 
-        private string _ScriptCode = null;
-        private Regex _ScriptFilter = new Regex(@"<\?(?:php)?(.*)\?>", RegexOptions.Compiled | RegexOptions.Singleline);
+        private string _StartParameter = "";
+        public string StartParameter
+        {
+            get
+            {
+                string ret = _StartParameter.Replace("%s", ScriptFile);
+                ret = ret.Replace("%f", PHPFile);
+                ret = ret.Replace("%p", ScriptArguments);
+                return ret;
+            }
+            set
+            {
+                _StartParameter = value;
+            }
+        }
+
+        /*private string _ScriptCode = null;
+        //private Regex _ScriptFilter = new Regex(@"<\?(?:php)?(.*)\?>", RegexOptions.Compiled | RegexOptions.Singleline);
         public string ScriptCode
         {
             set
@@ -91,7 +107,7 @@ namespace phpBox
             {
                 return _ScriptCode;
             }
-        }
+        }*/
 
         public string ClearScriptFile { get; set; }
 
@@ -176,7 +192,8 @@ namespace phpBox
             Exit = false;
 
             MatchCommandOld = new Regex(@"^\{(.+)\}$", RegexOptions.Compiled | RegexOptions.Singleline);
-            MatchCommand = new Regex(@"^phpBox\.([a-zA-Z_0-9]+)\((.+)\)\;$", RegexOptions.Compiled | RegexOptions.Singleline);
+            //At time not in use
+            //MatchCommand = new Regex(@"^phpBox\.([a-zA-Z_0-9]+)\((.+)\)\;$", RegexOptions.Compiled | RegexOptions.Singleline);
 
             this.PHPFile = PHPFile;
             this.ScriptFile = ScriptFile;
@@ -233,25 +250,32 @@ namespace phpBox
 
         protected void OnProcessDataRecived(object sender, DataReceivedEventArgs e)
         {
-            if (e.Data != null)
+            try
             {
-                Match old_cmd = MatchCommandOld.Match(e.Data);
-                Match cmd = MatchCommand.Match(e.Data);
-
-                if (old_cmd.Success)
+                if (e.Data != null)
                 {
-                    Thread cmdExecuter = new Thread(new ParameterizedThreadStart(raiseOldCommand));
-                    cmdExecuter.IsBackground = true;
+                    Match old_cmd = MatchCommandOld.Match(e.Data);
+                    //Match cmd = MatchCommand.Match(e.Data);
 
-                    string[] arg = old_cmd.Groups[1].Value.Split('|');
-                    cmdExecuter.Start(new object[2] { arg[0], (arg.Length >= 2 ? arg[1] : null)});
-                }
-                else if (cmd.Success)
-                {
+                    if (old_cmd.Success)
+                    {
+                        Thread cmdExecuter = new Thread(new ParameterizedThreadStart(raiseOldCommand));
+                        cmdExecuter.IsBackground = true;
 
+                        string[] arg = old_cmd.Groups[1].Value.Split('|');
+                        cmdExecuter.Start(new object[2] { arg[0], (arg.Length >= 2 ? arg[1] : null) });
+                    }
+                    /*else if (cmd.Success)
+                    {
+                        At time not in use...
+                    }*/
+                    else
+                        DataRecived(sender, new ScriptData(e.Data, ScriptDataType.Output));
                 }
-                else
-                    DataRecived(sender, new ScriptData(e.Data, ScriptDataType.Output));
+            }
+            catch (Exception ex)
+            {
+                Call.Error(ex);
             }
         }
 
@@ -267,16 +291,16 @@ namespace phpBox
             {
                 myStartInfo = new ProcessStartInfo();
                 myStartInfo.FileName = PHPFile;
-                if (Execute == ExecuteType.File)
-                    myStartInfo.Arguments = "-f \"" + ScriptFile + "\"";
-                else if (Execute == ExecuteType.Code)
-                    myStartInfo.Arguments = "-r \"" + ScriptCode.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\"";
+                //if (Execute == ExecuteType.File)
+                    myStartInfo.Arguments = StartParameter;
+                /*else if (Execute == ExecuteType.Code)
+                //    myStartInfo.Arguments = "-r \"" + ScriptCode.Replace(@"\", @"\\").Replace("\"", "\\\"") + "\""; //At time not in use...
 
                 if (!String.IsNullOrWhiteSpace(ScriptArguments))
                 {
                     myStartInfo.Arguments += " -- \"" + ScriptArguments + "\"";
                 }
-
+                */
                 myStartInfo.WorkingDirectory = Path.GetDirectoryName(ScriptFile);
                 myStartInfo.CreateNoWindow = true;
                 myStartInfo.RedirectStandardOutput = true;
@@ -300,9 +324,15 @@ namespace phpBox
                 StartTime = myProcess.StartTime;
                 if (!myProcess.HasExited)
                 {
-                    myProcess.BeginErrorReadLine();
-                    myProcess.BeginOutputReadLine();
-                    myProcess.WaitForExit();
+                    try
+                    {
+                        myProcess.BeginErrorReadLine();
+                        myProcess.BeginOutputReadLine();
+                        myProcess.WaitForExit();
+                    }
+                    catch
+                    {
+                    }
                 }
 
                 try
