@@ -119,6 +119,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\AddFavorite.png" />
+    <None Include="Resources\RemoveFavorite.png" />
+    <None Include="Resources\favorite-add-icon.png" />
+    <None Include="Resources\SwitchView.png" />
     <None Include="Resources\Microsoft.WindowsAPICodePack.Shell.dll" />
     <None Include="Resources\Microsoft.WindowsAPICodePack.dll" />
     <None Include="bin\Debug\Microsoft.WindowsAPICodePack.dll" />

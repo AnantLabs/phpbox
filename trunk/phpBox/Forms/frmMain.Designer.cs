@@ -41,23 +41,27 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnTopMost = new System.Windows.Forms.ToolStripButton();
             this.btnExecute = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.viewInWebBrowser = new System.Windows.Forms.ToolStripButton();
             this.mainTabs = new System.Windows.Forms.TabControl();
             this.tpScriptFile = new System.Windows.Forms.TabPage();
+            this.btnFav = new System.Windows.Forms.Button();
             this.btnGetFile = new System.Windows.Forms.Button();
-            this.txtFilePath = new System.Windows.Forms.TextBox();
+            this.txtFilePath = new System.Windows.Forms.ComboBox();
             this.tpParameter = new System.Windows.Forms.TabPage();
-            this.txtGetParameter = new System.Windows.Forms.TextBox();
+            this.txtGetParameter = new System.Windows.Forms.ComboBox();
             this.tpStartParameter = new System.Windows.Forms.TabPage();
             this.txtStartParameter = new System.Windows.Forms.TextBox();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
-            this.viewUpdater = new System.Windows.Forms.Timer(this.components);
-            this.lblExecTime = new System.Windows.Forms.Label();
-            this.pbProgress = new System.Windows.Forms.ProgressBar();
-            this.lblPercent = new System.Windows.Forms.Label();
             this.mainConMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewUpdater = new System.Windows.Forms.Timer(this.components);
+            this.lblExecTime = new System.Windows.Forms.Label();
+            this.pbProgress = new System.Windows.Forms.ProgressBar();
+            this.lblPercent = new System.Windows.Forms.Label();
+            this.webView = new System.Windows.Forms.WebBrowser();
             this.mainStatus.SuspendLayout();
             this.mainTools.SuspendLayout();
             this.mainTabs.SuspendLayout();
@@ -111,7 +115,9 @@
             this.btnFile,
             this.toolStripSeparator3,
             this.btnTopMost,
-            this.btnExecute});
+            this.btnExecute,
+            this.toolStripSeparator1,
+            this.viewInWebBrowser});
             this.mainTools.Location = new System.Drawing.Point(0, 57);
             this.mainTools.Name = "mainTools";
             this.mainTools.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
@@ -138,7 +144,7 @@
             // 
             this.aboutToolStripMenuItem.Image = global::phpBox.Icons.About;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.ToolTipText = "About phpBox";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
@@ -147,7 +153,7 @@
             // 
             this.exitToolStripMenuItem.Image = global::phpBox.Icons.Exit;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.ToolTipText = "Close phpBox";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
@@ -178,6 +184,20 @@
             this.btnExecute.Text = "Start";
             this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            // 
+            // viewInWebBrowser
+            // 
+            this.viewInWebBrowser.Image = global::phpBox.Icons.SwitchView;
+            this.viewInWebBrowser.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.viewInWebBrowser.Name = "viewInWebBrowser";
+            this.viewInWebBrowser.Size = new System.Drawing.Size(88, 28);
+            this.viewInWebBrowser.Text = "WebBrowser";
+            this.viewInWebBrowser.Click += new System.EventHandler(this.viewInWebBrowser_Click);
+            // 
             // mainTabs
             // 
             this.mainTabs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -195,6 +215,7 @@
             // 
             // tpScriptFile
             // 
+            this.tpScriptFile.Controls.Add(this.btnFav);
             this.tpScriptFile.Controls.Add(this.btnGetFile);
             this.tpScriptFile.Controls.Add(this.txtFilePath);
             this.tpScriptFile.Location = new System.Drawing.Point(4, 25);
@@ -205,12 +226,25 @@
             this.tpScriptFile.Text = "Script File";
             this.tpScriptFile.UseVisualStyleBackColor = true;
             // 
+            // btnFav
+            // 
+            this.btnFav.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnFav.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFav.BackgroundImage")));
+            this.btnFav.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnFav.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnFav.Location = new System.Drawing.Point(449, 3);
+            this.btnFav.Name = "btnFav";
+            this.btnFav.Size = new System.Drawing.Size(25, 23);
+            this.btnFav.TabIndex = 4;
+            this.btnFav.UseVisualStyleBackColor = true;
+            this.btnFav.Click += new System.EventHandler(this.btnFav_Click);
+            // 
             // btnGetFile
             // 
             this.btnGetFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGetFile.BackgroundImage = global::phpBox.Icons.Browse;
             this.btnGetFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnGetFile.Location = new System.Drawing.Point(478, 3);
+            this.btnGetFile.Location = new System.Drawing.Point(477, 3);
             this.btnGetFile.Name = "btnGetFile";
             this.btnGetFile.Size = new System.Drawing.Size(25, 23);
             this.btnGetFile.TabIndex = 3;
@@ -224,17 +258,22 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFilePath.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.txtFilePath.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystem;
-            this.txtFilePath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtFilePath.BackColor = System.Drawing.SystemColors.Window;
+            this.txtFilePath.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.txtFilePath.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtFilePath.Location = new System.Drawing.Point(2, 3);
             this.txtFilePath.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.Size = new System.Drawing.Size(475, 23);
+            this.txtFilePath.Size = new System.Drawing.Size(472, 23);
             this.txtFilePath.TabIndex = 0;
+            this.txtFilePath.DoubleClick += new System.EventHandler(this.getFile);
+            this.txtFilePath.SelectedIndexChanged += new System.EventHandler(this.txtFilePath_CheckIsFavorite);
+            this.txtFilePath.TextUpdate += new System.EventHandler(this.txtFilePath_CheckIsFavorite);
+            this.txtFilePath.TextChanged += new System.EventHandler(this.txtFilePath_TextChanged);
             this.txtFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragDrop);
             this.txtFilePath.DragEnter += new System.Windows.Forms.DragEventHandler(this.txtFilePath_DragEnter);
-            this.txtFilePath.DoubleClick += new System.EventHandler(this.getFile);
             this.txtFilePath.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtFilePath_KeyDown);
+            this.txtFilePath.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtFilePath_PreviewKeyDown);
             // 
             // tpParameter
             // 
@@ -249,15 +288,20 @@
             // 
             // txtGetParameter
             // 
+            this.txtGetParameter.AllowDrop = true;
             this.txtGetParameter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGetParameter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtGetParameter.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.txtGetParameter.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.txtGetParameter.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.txtGetParameter.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtGetParameter.Location = new System.Drawing.Point(2, 3);
-            this.txtGetParameter.Margin = new System.Windows.Forms.Padding(3, 7, 3, 3);
+            this.txtGetParameter.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.txtGetParameter.Name = "txtGetParameter";
-            this.txtGetParameter.Size = new System.Drawing.Size(500, 23);
+            this.txtGetParameter.Size = new System.Drawing.Size(501, 23);
             this.txtGetParameter.TabIndex = 1;
+            this.txtGetParameter.Enter += new System.EventHandler(this.txtGetParameter_Enter);
+            this.txtGetParameter.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.txtGetParameter_PreviewKeyDown);
             // 
             // tpStartParameter
             // 
@@ -289,11 +333,11 @@
             this.txtOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOutput.AutoWordSelection = true;
             this.txtOutput.BackColor = System.Drawing.Color.White;
-            this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOutput.ContextMenuStrip = this.mainConMenu;
             this.txtOutput.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtOutput.HideSelection = false;
             this.txtOutput.Location = new System.Drawing.Point(0, 86);
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ShowSelectionMargin = true;
@@ -302,6 +346,33 @@
             this.txtOutput.Text = "";
             this.txtOutput.SelectionChanged += new System.EventHandler(this.txtOutput_SelectionChanged);
             this.txtOutput.TextChanged += new System.EventHandler(this.txtOutput_TextChanged);
+            // 
+            // mainConMenu
+            // 
+            this.mainConMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyToolStripMenuItem,
+            this.cutToolStripMenuItem,
+            this.pasteToolStripMenuItem});
+            this.mainConMenu.Name = "mainConMenu";
+            this.mainConMenu.Size = new System.Drawing.Size(113, 70);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.copyToolStripMenuItem.Text = "Copy";
+            // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.cutToolStripMenuItem.Text = "Cut";
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.pasteToolStripMenuItem.Text = "Paste";
             // 
             // viewUpdater
             // 
@@ -339,32 +410,18 @@
             this.lblPercent.Text = "0%";
             this.lblPercent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // mainConMenu
+            // webView
             // 
-            this.mainConMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyToolStripMenuItem,
-            this.cutToolStripMenuItem,
-            this.pasteToolStripMenuItem});
-            this.mainConMenu.Name = "mainConMenu";
-            this.mainConMenu.Size = new System.Drawing.Size(113, 70);
-            // 
-            // copyToolStripMenuItem
-            // 
-            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.copyToolStripMenuItem.Text = "Copy";
-            // 
-            // cutToolStripMenuItem
-            // 
-            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.cutToolStripMenuItem.Text = "Cut";
-            // 
-            // pasteToolStripMenuItem
-            // 
-            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.pasteToolStripMenuItem.Text = "Paste";
+            this.webView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.webView.Location = new System.Drawing.Point(-1, 86);
+            this.webView.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webView.Name = "webView";
+            this.webView.ScriptErrorsSuppressed = true;
+            this.webView.Size = new System.Drawing.Size(503, 447);
+            this.webView.TabIndex = 7;
+            this.webView.Visible = false;
             // 
             // frmMain
             // 
@@ -372,6 +429,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(502, 578);
+            this.Controls.Add(this.webView);
             this.Controls.Add(this.pbProgress);
             this.Controls.Add(this.lblPercent);
             this.Controls.Add(this.lblExecTime);
@@ -400,9 +458,7 @@
             this.mainTools.PerformLayout();
             this.mainTabs.ResumeLayout(false);
             this.tpScriptFile.ResumeLayout(false);
-            this.tpScriptFile.PerformLayout();
             this.tpParameter.ResumeLayout(false);
-            this.tpParameter.PerformLayout();
             this.tpStartParameter.ResumeLayout(false);
             this.tpStartParameter.PerformLayout();
             this.mainConMenu.ResumeLayout(false);
@@ -419,8 +475,6 @@
         private System.Windows.Forms.TabPage tpParameter;
         private System.Windows.Forms.TabPage tpScriptFile;
         private System.Windows.Forms.Button btnGetFile;
-        private System.Windows.Forms.TextBox txtFilePath;
-        private System.Windows.Forms.TextBox txtGetParameter;
         private System.Windows.Forms.RichTextBox txtOutput;
         private System.Windows.Forms.ToolStripSplitButton btnFile;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
@@ -441,6 +495,12 @@
         private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton viewInWebBrowser;
+        private System.Windows.Forms.WebBrowser webView;
+        private System.Windows.Forms.Button btnFav;
+        private System.Windows.Forms.ComboBox txtFilePath;
+        private System.Windows.Forms.ComboBox txtGetParameter;
 
     }
 }
