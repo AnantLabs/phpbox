@@ -50,10 +50,17 @@ namespace phpBox
                     Directory.CreateDirectory(AppDirectory);
                 }
 
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                _MainForm = new frmMain();
-                Application.Run(MainForm);
+                try
+                {
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    _MainForm = new frmMain();
+                    Application.Run(MainForm);
+                }
+                catch (Exception ex)
+                {
+                    Call.Error(ex);
+                }
         }
     }
 }

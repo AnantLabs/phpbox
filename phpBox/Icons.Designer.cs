@@ -67,6 +67,13 @@ namespace phpBox {
             }
         }
         
+        internal static System.Drawing.Bitmap AddFavorite {
+            get {
+                object obj = ResourceManager.GetObject("AddFavorite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Browse {
             get {
                 object obj = ResourceManager.GetObject("Browse", resourceCulture);
@@ -123,6 +130,13 @@ namespace phpBox {
             }
         }
         
+        internal static System.Drawing.Bitmap RemoveFavorite {
+            get {
+                object obj = ResourceManager.GetObject("RemoveFavorite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Start {
             get {
                 object obj = ResourceManager.GetObject("Start", resourceCulture);
@@ -133,6 +147,13 @@ namespace phpBox {
         internal static System.Drawing.Bitmap Stop {
             get {
                 object obj = ResourceManager.GetObject("Stop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap SwitchView {
+            get {
+                object obj = ResourceManager.GetObject("SwitchView", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
