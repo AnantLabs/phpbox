@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+        *,html{
+          font-family: "arial","sans-serif";
+        }
+      body{
+         margin: 10px;
+         padding: 10px;
+      }
+      body {
+        background-color: #F0F0F0;
+      }
+      .frame,.header,.body,.footer {
+        width: 100%;
+      }
+      .logo,.info {
+        float: left;
+      }
+      .info {
+        clear: right;
+      }
+      .header,.body,.footer {
+        clear: both;
+      }
+      .logo {
+          padding-right: 10px;
+          margin-right: 10px;
+      }
+        .body,.footer{
+          padding-top: 5px;
+          margin-top: 5px;
+          font-size: 12px;
+        }
+        
+        #closeAbout{
+          float: right;
+        }
+		</style>
+	</head>
+	<body>
+   <div class="frame">
+     <div class="header">
+       <div class="logo">
+         <img src="http://phpbox.googlecode.com/svn/images/icon.png" />
+       </div>
+       <div class="info">
+         <p><h3>{NAME}</h3></p>
+         <p>{VERSION}</p>
+         <p>{COPYRIGHT}</p>
+         <p>{COMPANY}</p>
+       </div>
+     </div>
+     <div class="body">
+  				phpBox is a small and lightweight everyday-assistant if it comes to PHP development.
+					If you are familiar with PHP, you know there is neither a GUI nor any simple way to execute your script just for two lines of code.
+					The idea for such a small and simple helper started somewhere around 2008 here at GEDAK.
+					I, Lars, write PHP scripts for nearly every task.
+					Even if there are 200 files to be renamed in a special, not common definable/renameable way, I pop off an UltraEdit?
+					instance and write some lines of PHP to solve the task. In 2008, Armin, a work mate of mine, wrote me PHPrun.
+					It solved my problems very well but left some space for improvement. Sadly he left the company to reach out for more (and less coding ;-) )
+     </div>
+     <div class="footer">
+       <div class="links">
+       	  <h3>Links</h3>
+            <ul>
+              <li><a href="http://code.google.com/p/phpbox/">Project Page at code.google.com</a></li>
+             </ul>
+       </div>
+       <div class="credits">
+  				<h3>Credits</h3>
+              <ul>
+                <li><a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html#TOC1">GNU GPL v2</a></li>
+                <li><a href="http://archive.msdn.microsoft.com/WindowsAPICodePack/Project/License.aspx">Microsoft Code API Pack License</a></li>
+              </ul>
+       </div>
+       <input type="button" id="closeAbout" value="Close" />
+     </div>
+   </div>
+	</body>
+</html>

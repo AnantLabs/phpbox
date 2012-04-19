@@ -43,7 +43,6 @@
             // 
             this.viewAbout.AllowWebBrowserDrop = false;
             this.viewAbout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.viewAbout.IsWebBrowserContextMenuEnabled = false;
             this.viewAbout.Location = new System.Drawing.Point(0, 0);
             this.viewAbout.Margin = new System.Windows.Forms.Padding(0);
             this.viewAbout.MinimumSize = new System.Drawing.Size(20, 20);

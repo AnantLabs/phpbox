@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Net.NetworkInformation;
 
 namespace phpBox
 {
@@ -8,31 +9,59 @@ namespace phpBox
     {
         public About()
         {
+
             InitializeComponent();
 
-            if (!viewAbout.IsOffline)
+            bool isLoaded = false;
+
+            if (NetworkInterface.GetIsNetworkAvailable())
             {
-                viewAbout.Refresh();
+
+                if (!viewAbout.IsOffline)
+                {
+                    viewAbout.Refresh();
+                }
+
+                while (viewAbout.ReadyState != WebBrowserReadyState.Complete)
+                {
+                    Application.DoEvents();
+                }
+
+                isLoaded = viewAbout.DocumentTitle.Length == 0;
             }
 
             this.Text = String.Format("Info über {0}", AssemblyTitle);
-            while (viewAbout.ReadyState != WebBrowserReadyState.Complete)
+            if (!isLoaded)
             {
-                Application.DoEvents();
-            }
-            
-            viewAbout.DocumentText = viewAbout.DocumentText.Replace("{NAME}", AssemblyTitle).
+                viewAbout.DocumentText = OfflineCache.about.Replace("{NAME}", AssemblyTitle).
                                                             Replace("{VERSION}", AssemblyVersion.Remove(AssemblyVersion.Length - 2, 2)).
                                                             Replace("{COPYRIGHT}", AssemblyCopyright).
                                                             Replace("{COMPANY}", AssemblyCompany);
+            }
+            else
+            {
+                viewAbout.DocumentText = viewAbout.DocumentText.Replace("{NAME}", AssemblyTitle).
+                                                            Replace("{VERSION}", AssemblyVersion.Remove(AssemblyVersion.Length - 2, 2)).
+                                                            Replace("{COPYRIGHT}", AssemblyCopyright).
+                                                            Replace("{COMPANY}", AssemblyCompany);
+            }
 
             while (viewAbout.ReadyState != WebBrowserReadyState.Complete)
             {
                 Application.DoEvents();
             }
+
             viewAbout.Navigating += new WebBrowserNavigatingEventHandler(viewAbout_Navigating);
 
-            viewAbout.Document.GetElementById("closeAbout").Click += new HtmlElementEventHandler(Close_Click);
+            try
+            {
+
+                viewAbout.Document.GetElementById("closeAbout").Click += new HtmlElementEventHandler(Close_Click);
+            }
+            catch (Exception ex)
+            {
+                Call.Error("Internet connection is needed to load the about page!");
+            }
         }
 
         #region Assemblyattributaccessoren

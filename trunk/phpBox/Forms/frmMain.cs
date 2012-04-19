@@ -465,7 +465,7 @@ namespace phpBox
                     {
                         ofd.Multiselect = false;
                         ofd.Title = Application.ProductName + " - php.exe search";
-                        ofd.Filter = "PHP Executable (php.exe)|php.exe|All Files (*.*)|*.*";
+                        ofd.Filter = "PHP Executable|php.exe|All Files (*.*)|*.*";
                         ofd.FilterIndex = 0;
                         ofd.RestoreDirectory = true;
                         if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
