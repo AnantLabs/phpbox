@@ -355,15 +355,28 @@ namespace phpBox
             btnFile.ShowDropDown();
         }
 
+
+        private string dataCache = ""; 
         private void Executer_DataRecived(object sender, ScriptData e)
         {
+            /*
             if (e.Type == ScriptDataType.Error)
             {
                 InvokeWriteLogLine_Old("[ScriptError] " + e.Message, Color.Red);
             }
             else
             {
-                InvokeWriteLogLine_Old(e.Message, Color.Black);
+                
+            }*/
+
+            if(e.Type == ScriptDataType.Output)
+            {
+                if(dataCache.Length > 0)
+                {
+                    dataCache += "\n";
+                }
+
+                dataCache += e.Message;
             }
         }
 
@@ -504,6 +517,9 @@ namespace phpBox
 
         private void ScriptEnd(StopReason reason)
         {
+
+            writeLogCache2Log();
+
             switch (reason)
             {
                 case StopReason.Executed:
@@ -704,6 +720,7 @@ namespace phpBox
         {
             this.Text = text + " - " + Application.ProductName;
         }
+
         private void InvokeSetCaption_Old(string text)
         {
             this.Invoke(new ChangeStringValue_Old(SetCaption_Old), text);
@@ -1008,6 +1025,39 @@ namespace phpBox
             if (!txtFilePath.DroppedDown && e.KeyCode == Keys.Down)
             {
                 txtFilePath.DroppedDown = true;
+            }
+        }
+
+        private void writeLogCache2Log()
+        {
+            if(dataCache.Length > 0)
+            {
+                InvokeWriteLogLine_Old(dataCache, Color.Black);
+                dataCache = "";
+            }
+        }
+
+        private void logUpdater_Tick(object sender, EventArgs e)
+        {
+            writeLogCache2Log();
+        }
+
+        private void logToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using(SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.FileName = "phpBox.rtf";
+                sfd.Filter = "Rtf file (*.rtf)|*.rtf|Log file (*.log)|*.log";
+                if(sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    if(sfd.FileName.EndsWith(".rtf"))
+                    {
+                        txtOutput.SaveFile(sfd.FileName);
+                    } else
+                    {
+                        File.WriteAllText(sfd.FileName, txtOutput.Text);
+                    }
+                }
             }
         }
     }

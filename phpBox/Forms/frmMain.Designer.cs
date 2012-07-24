@@ -35,10 +35,18 @@
             this.ToolStripStatusSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.lblSelCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainTools = new System.Windows.Forms.ToolStrip();
+            this.btnFile = new System.Windows.Forms.ToolStripSplitButton();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnTopMost = new System.Windows.Forms.ToolStripButton();
+            this.btnExecute = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.viewInWebBrowser = new System.Windows.Forms.ToolStripButton();
             this.mainTabs = new System.Windows.Forms.TabControl();
             this.tpScriptFile = new System.Windows.Forms.TabPage();
+            this.btnFav = new System.Windows.Forms.Button();
+            this.btnGetFile = new System.Windows.Forms.Button();
             this.txtFilePath = new System.Windows.Forms.ComboBox();
             this.tpParameter = new System.Windows.Forms.TabPage();
             this.txtGetParameter = new System.Windows.Forms.ComboBox();
@@ -54,14 +62,9 @@
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.lblPercent = new System.Windows.Forms.Label();
             this.webView = new System.Windows.Forms.WebBrowser();
-            this.btnFav = new System.Windows.Forms.Button();
-            this.btnGetFile = new System.Windows.Forms.Button();
-            this.btnFile = new System.Windows.Forms.ToolStripSplitButton();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnTopMost = new System.Windows.Forms.ToolStripButton();
-            this.btnExecute = new System.Windows.Forms.ToolStripButton();
-            this.viewInWebBrowser = new System.Windows.Forms.ToolStripButton();
+            this.logUpdater = new System.Windows.Forms.Timer(this.components);
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainStatus.SuspendLayout();
             this.mainTools.SuspendLayout();
             this.mainTabs.SuspendLayout();
@@ -126,16 +129,79 @@
             this.mainTools.TabIndex = 1;
             this.mainTools.Text = "Tools";
             // 
+            // btnFile
+            // 
+            this.btnFile.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.btnFile.Image = global::phpBox.Icons.File;
+            this.btnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnFile.Name = "btnFile";
+            this.btnFile.Size = new System.Drawing.Size(57, 28);
+            this.btnFile.Text = "File";
+            this.btnFile.ToolTipText = "Additional control functions";
+            this.btnFile.Click += new System.EventHandler(this.btnFile_Click);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Image = global::phpBox.Icons.About;
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.ToolTipText = "About phpBox";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Image = global::phpBox.Icons.Exit;
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.ToolTipText = "Close phpBox";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 31);
             // 
+            // btnTopMost
+            // 
+            this.btnTopMost.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnTopMost.Image = global::phpBox.Icons.TopMost;
+            this.btnTopMost.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnTopMost.Name = "btnTopMost";
+            this.btnTopMost.Size = new System.Drawing.Size(78, 28);
+            this.btnTopMost.Text = "Top most";
+            this.btnTopMost.ToolTipText = "Set phpBox to top most window";
+            this.btnTopMost.Click += new System.EventHandler(this.btnTopMost_Click);
+            // 
+            // btnExecute
+            // 
+            this.btnExecute.Image = global::phpBox.Icons.Start;
+            this.btnExecute.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnExecute.Name = "btnExecute";
+            this.btnExecute.Size = new System.Drawing.Size(51, 28);
+            this.btnExecute.Text = "Start";
+            this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            // 
+            // viewInWebBrowser
+            // 
+            this.viewInWebBrowser.AutoSize = false;
+            this.viewInWebBrowser.Image = global::phpBox.Icons.SwitchView;
+            this.viewInWebBrowser.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.viewInWebBrowser.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.viewInWebBrowser.Name = "viewInWebBrowser";
+            this.viewInWebBrowser.Size = new System.Drawing.Size(95, 28);
+            this.viewInWebBrowser.Text = "WebBrowser";
+            this.viewInWebBrowser.Click += new System.EventHandler(this.viewInWebBrowser_Click);
             // 
             // mainTabs
             // 
@@ -164,6 +230,31 @@
             this.tpScriptFile.TabIndex = 1;
             this.tpScriptFile.Text = "Script File";
             this.tpScriptFile.UseVisualStyleBackColor = true;
+            // 
+            // btnFav
+            // 
+            this.btnFav.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnFav.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFav.BackgroundImage")));
+            this.btnFav.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnFav.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnFav.Location = new System.Drawing.Point(456, 3);
+            this.btnFav.Name = "btnFav";
+            this.btnFav.Size = new System.Drawing.Size(25, 23);
+            this.btnFav.TabIndex = 4;
+            this.btnFav.UseVisualStyleBackColor = true;
+            this.btnFav.Click += new System.EventHandler(this.btnFav_Click);
+            // 
+            // btnGetFile
+            // 
+            this.btnGetFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGetFile.BackgroundImage = global::phpBox.Icons.Browse;
+            this.btnGetFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnGetFile.Location = new System.Drawing.Point(484, 3);
+            this.btnGetFile.Name = "btnGetFile";
+            this.btnGetFile.Size = new System.Drawing.Size(25, 23);
+            this.btnGetFile.TabIndex = 3;
+            this.btnGetFile.UseVisualStyleBackColor = true;
+            this.btnGetFile.Click += new System.EventHandler(this.getFile);
             // 
             // txtFilePath
             // 
@@ -195,7 +286,7 @@
             this.tpParameter.Location = new System.Drawing.Point(4, 25);
             this.tpParameter.Name = "tpParameter";
             this.tpParameter.Padding = new System.Windows.Forms.Padding(3);
-            this.tpParameter.Size = new System.Drawing.Size(506, 27);
+            this.tpParameter.Size = new System.Drawing.Size(513, 27);
             this.tpParameter.TabIndex = 0;
             this.tpParameter.Text = "Parameter String";
             this.tpParameter.UseVisualStyleBackColor = true;
@@ -223,7 +314,7 @@
             this.tpStartParameter.Location = new System.Drawing.Point(4, 25);
             this.tpStartParameter.Name = "tpStartParameter";
             this.tpStartParameter.Padding = new System.Windows.Forms.Padding(3);
-            this.tpStartParameter.Size = new System.Drawing.Size(506, 27);
+            this.tpStartParameter.Size = new System.Drawing.Size(513, 27);
             this.tpStartParameter.TabIndex = 2;
             this.tpStartParameter.Text = "Start Parameter";
             this.tpStartParameter.UseVisualStyleBackColor = true;
@@ -266,9 +357,10 @@
             this.mainConMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyToolStripMenuItem,
             this.cutToolStripMenuItem,
-            this.pasteToolStripMenuItem});
+            this.pasteToolStripMenuItem,
+            this.saveToolStripMenuItem});
             this.mainConMenu.Name = "mainConMenu";
-            this.mainConMenu.Size = new System.Drawing.Size(103, 70);
+            this.mainConMenu.Size = new System.Drawing.Size(153, 114);
             // 
             // copyToolStripMenuItem
             // 
@@ -337,93 +429,26 @@
             this.webView.TabIndex = 7;
             this.webView.Visible = false;
             // 
-            // btnFav
+            // logUpdater
             // 
-            this.btnFav.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFav.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnFav.BackgroundImage")));
-            this.btnFav.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnFav.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnFav.Location = new System.Drawing.Point(456, 3);
-            this.btnFav.Name = "btnFav";
-            this.btnFav.Size = new System.Drawing.Size(25, 23);
-            this.btnFav.TabIndex = 4;
-            this.btnFav.UseVisualStyleBackColor = true;
-            this.btnFav.Click += new System.EventHandler(this.btnFav_Click);
+            this.logUpdater.Enabled = true;
+            this.logUpdater.Interval = 350;
+            this.logUpdater.Tick += new System.EventHandler(this.logUpdater_Tick);
             // 
-            // btnGetFile
+            // saveToolStripMenuItem
             // 
-            this.btnGetFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGetFile.BackgroundImage = global::phpBox.Icons.Browse;
-            this.btnGetFile.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnGetFile.Location = new System.Drawing.Point(484, 3);
-            this.btnGetFile.Name = "btnGetFile";
-            this.btnGetFile.Size = new System.Drawing.Size(25, 23);
-            this.btnGetFile.TabIndex = 3;
-            this.btnGetFile.UseVisualStyleBackColor = true;
-            this.btnGetFile.Click += new System.EventHandler(this.getFile);
+            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.logToolStripMenuItem});
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Text = "Save";
             // 
-            // btnFile
+            // logToolStripMenuItem
             // 
-            this.btnFile.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.btnFile.Image = global::phpBox.Icons.File;
-            this.btnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnFile.Name = "btnFile";
-            this.btnFile.Size = new System.Drawing.Size(57, 28);
-            this.btnFile.Text = "File";
-            this.btnFile.ToolTipText = "Additional control functions";
-            this.btnFile.Click += new System.EventHandler(this.btnFile_Click);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Image = global::phpBox.Icons.About;
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.ToolTipText = "About phpBox";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Image = global::phpBox.Icons.Exit;
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.ToolTipText = "Close phpBox";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // btnTopMost
-            // 
-            this.btnTopMost.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.btnTopMost.Image = global::phpBox.Icons.TopMost;
-            this.btnTopMost.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnTopMost.Name = "btnTopMost";
-            this.btnTopMost.Size = new System.Drawing.Size(78, 28);
-            this.btnTopMost.Text = "Top most";
-            this.btnTopMost.ToolTipText = "Set phpBox to top most window";
-            this.btnTopMost.Click += new System.EventHandler(this.btnTopMost_Click);
-            // 
-            // btnExecute
-            // 
-            this.btnExecute.Image = global::phpBox.Icons.Start;
-            this.btnExecute.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnExecute.Name = "btnExecute";
-            this.btnExecute.Size = new System.Drawing.Size(51, 28);
-            this.btnExecute.Text = "Start";
-            this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
-            // 
-            // viewInWebBrowser
-            // 
-            this.viewInWebBrowser.AutoSize = false;
-            this.viewInWebBrowser.Image = global::phpBox.Icons.SwitchView;
-            this.viewInWebBrowser.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.viewInWebBrowser.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.viewInWebBrowser.Name = "viewInWebBrowser";
-            this.viewInWebBrowser.Size = new System.Drawing.Size(95, 28);
-            this.viewInWebBrowser.Text = "WebBrowser";
-            this.viewInWebBrowser.Click += new System.EventHandler(this.viewInWebBrowser_Click);
+            this.logToolStripMenuItem.Name = "logToolStripMenuItem";
+            this.logToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.logToolStripMenuItem.Text = "Log";
+            this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -503,6 +528,9 @@
         private System.Windows.Forms.Button btnFav;
         private System.Windows.Forms.ComboBox txtFilePath;
         private System.Windows.Forms.ComboBox txtGetParameter;
+        private System.Windows.Forms.Timer logUpdater;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
 
     }
 }
