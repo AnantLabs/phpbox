@@ -41,3 +41,21 @@ C:\Dropbox\C#\phpBox\phpBox\obj\x86\Release\phpBox.Libs.resources
 C:\Dropbox\C#\phpBox\phpBox\obj\x86\Release\phpBox.OfflineCache.resources
 C:\Dropbox\C#\phpBox\phpBox\bin\Release\phpBox.pdb
 C:\Dropbox\C#\phpBox\phpBox\obj\x86\Release\phpBox.pdb
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\bin\Release\phpBox.exe.config
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.exe
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.pdb
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\bin\Release\phpBox.exe
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\bin\Release\phpBox.pdb
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\bin\Release\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\bin\Release\Microsoft.WindowsAPICodePack.dll
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.csprojResolveAssemblyReference.cache
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.About.resources
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.frmMain.resources
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.Icons.resources
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.Libs.resources
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.OfflineCache.resources
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.Properties.Resources.resources
+C:\Users\viktor.machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.csproj.GenerateResource.Cache
+C:\Users\Viktor Machnik\Google Drive\dev\C#\phpBox\phpBox\bin\Release\phpBox.exe.config
+C:\Users\Viktor Machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.exe
+C:\Users\Viktor Machnik\Google Drive\dev\C#\phpBox\phpBox\obj\x86\Release\phpBox.pdb
