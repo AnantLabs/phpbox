@@ -45,6 +45,7 @@
             this.viewInWebBrowser = new System.Windows.Forms.ToolStripButton();
             this.mainTabs = new System.Windows.Forms.TabControl();
             this.tpScriptFile = new System.Windows.Forms.TabPage();
+            this.cbScriptFileCharacterSet = new System.Windows.Forms.ComboBox();
             this.btnFav = new System.Windows.Forms.Button();
             this.btnGetFile = new System.Windows.Forms.Button();
             this.txtFilePath = new System.Windows.Forms.ComboBox();
@@ -57,14 +58,14 @@
             this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewUpdater = new System.Windows.Forms.Timer(this.components);
             this.lblExecTime = new System.Windows.Forms.Label();
             this.pbProgress = new System.Windows.Forms.ProgressBar();
             this.lblPercent = new System.Windows.Forms.Label();
             this.webView = new System.Windows.Forms.WebBrowser();
             this.logUpdater = new System.Windows.Forms.Timer(this.components);
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainStatus.SuspendLayout();
             this.mainTools.SuspendLayout();
             this.mainTabs.SuspendLayout();
@@ -220,6 +221,7 @@
             // 
             // tpScriptFile
             // 
+            this.tpScriptFile.Controls.Add(this.cbScriptFileCharacterSet);
             this.tpScriptFile.Controls.Add(this.btnFav);
             this.tpScriptFile.Controls.Add(this.btnGetFile);
             this.tpScriptFile.Controls.Add(this.txtFilePath);
@@ -230,6 +232,22 @@
             this.tpScriptFile.TabIndex = 1;
             this.tpScriptFile.Text = "Script File";
             this.tpScriptFile.UseVisualStyleBackColor = true;
+            // 
+            // cbScriptFileCharacterSet
+            // 
+            this.cbScriptFileCharacterSet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbScriptFileCharacterSet.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cbScriptFileCharacterSet.FormattingEnabled = true;
+            this.cbScriptFileCharacterSet.Items.AddRange(new object[] {
+            "ASCII",
+            "UTF7",
+            "UTF8",
+            "Unicode"});
+            this.cbScriptFileCharacterSet.Location = new System.Drawing.Point(3, 4);
+            this.cbScriptFileCharacterSet.Name = "cbScriptFileCharacterSet";
+            this.cbScriptFileCharacterSet.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.cbScriptFileCharacterSet.Size = new System.Drawing.Size(64, 21);
+            this.cbScriptFileCharacterSet.TabIndex = 5;
             // 
             // btnFav
             // 
@@ -266,10 +284,10 @@
             this.txtFilePath.BackColor = System.Drawing.SystemColors.Window;
             this.txtFilePath.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.txtFilePath.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFilePath.Location = new System.Drawing.Point(2, 3);
+            this.txtFilePath.Location = new System.Drawing.Point(70, 3);
             this.txtFilePath.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.Size = new System.Drawing.Size(479, 23);
+            this.txtFilePath.Size = new System.Drawing.Size(411, 23);
             this.txtFilePath.TabIndex = 0;
             this.txtFilePath.DoubleClick += new System.EventHandler(this.getFile);
             this.txtFilePath.SelectedIndexChanged += new System.EventHandler(this.txtFilePath_CheckIsFavorite);
@@ -360,7 +378,7 @@
             this.pasteToolStripMenuItem,
             this.saveToolStripMenuItem});
             this.mainConMenu.Name = "mainConMenu";
-            this.mainConMenu.Size = new System.Drawing.Size(153, 114);
+            this.mainConMenu.Size = new System.Drawing.Size(103, 92);
             // 
             // copyToolStripMenuItem
             // 
@@ -379,6 +397,21 @@
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.logToolStripMenuItem});
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(102, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            // 
+            // logToolStripMenuItem
+            // 
+            this.logToolStripMenuItem.Name = "logToolStripMenuItem";
+            this.logToolStripMenuItem.Size = new System.Drawing.Size(94, 22);
+            this.logToolStripMenuItem.Text = "Log";
+            this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
             // 
             // viewUpdater
             // 
@@ -434,21 +467,6 @@
             this.logUpdater.Enabled = true;
             this.logUpdater.Interval = 350;
             this.logUpdater.Tick += new System.EventHandler(this.logUpdater_Tick);
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.logToolStripMenuItem});
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            // 
-            // logToolStripMenuItem
-            // 
-            this.logToolStripMenuItem.Name = "logToolStripMenuItem";
-            this.logToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.logToolStripMenuItem.Text = "Log";
-            this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -531,6 +549,7 @@
         private System.Windows.Forms.Timer logUpdater;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
+        private System.Windows.Forms.ComboBox cbScriptFileCharacterSet;
 
     }
 }
