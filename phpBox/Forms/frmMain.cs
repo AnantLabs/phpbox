@@ -1,6 +1,7 @@
 ﻿#region usings
 using System;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Diagnostics;
@@ -18,6 +19,47 @@ namespace phpBox
         private string file = Path.Combine(Program.AppDirectory,"settings.ini");
         private string fScripts = Path.Combine(Program.AppDirectory, "scripts.ini");
         private string fParameters = Path.Combine(Program.AppDirectory, "parameters.ini");
+
+        public Encoding ScriptFileEncoding
+        {
+            get
+            {
+                switch(cbScriptFileCharacterSet.Text)
+                {
+                    case "ASCII":
+                        return Encoding.ASCII;
+                    case "UTF7":
+                        return Encoding.UTF7;
+                    case "UTF8":
+                        return Encoding.UTF8;
+                    case "Unicode":
+                        return Encoding.Unicode;
+                    default:
+                        return Encoding.UTF7;
+                }
+            }
+
+            set
+            {
+                if(value == Encoding.ASCII)
+                {
+                    cbScriptFileCharacterSet.Text = "ASCII";
+                }else if(value == Encoding.UTF7)
+                {
+                    cbScriptFileCharacterSet.Text = "UTF7";
+                }else if(value == Encoding.UTF8)
+                {
+                    cbScriptFileCharacterSet.Text = "UTF8";
+                }else if(value == Encoding.Unicode)
+                {
+                    cbScriptFileCharacterSet.Text = "Unicode";
+                } else
+                {
+                    cbScriptFileCharacterSet.Text = "UTF7";
+                }
+            }
+        }
+        
 
         public string ScriptPath
         {
@@ -156,6 +198,8 @@ namespace phpBox
             if (!String.IsNullOrEmpty(s)) ScriptPath = s;
 
             Executer = new ScriptExecuter(PHPFile, ScriptPath, ScriptArguments);
+            Executer.ScriptFileEncoding = ScriptFileEncoding;
+
             Executer.DataRecived += new ScriptExecuter.DataRecivedEventHandler(Executer_DataRecived);
             Executer.ScriptStarted += new ScriptExecuter.ScriptStartedEventHandler(writeHeader);
             Executer.ScriptStopped += new ScriptExecuter.ScriptStoppedEventHandler(ScriptEnd);
@@ -435,6 +479,8 @@ namespace phpBox
             }
 
             AutoUpdater.Update();
+
+            ScriptFileEncoding = Encoding.UTF8;
         }
 
         private void txtFilePath_DragDrop(object sender, DragEventArgs e)
@@ -507,6 +553,7 @@ namespace phpBox
 
             Executer.PHPFile = PHPFile;
             Executer.ScriptFile = ScriptPath;
+            Executer.ScriptFileEncoding = ScriptFileEncoding;
             Executer.ScriptArguments = ScriptArguments;
             Executer.StartParameter = StartParameter;
             setExecuteBtn();
@@ -972,7 +1019,32 @@ namespace phpBox
                         btnFav.Enabled = true;
                     }
                 }
+
+                ScriptFileEncoding = getFileEncoding(ScriptPath);
             }
+        }
+
+        private Encoding getFileEncoding(string srcFile)
+        {
+            // *** Use Default of Encoding.Default (Ansi CodePage)
+            Encoding enc = Encoding.Default;
+
+            // *** Detect byte order mark if any - otherwise assume default
+            byte[] buffer = new byte[5];
+            FileStream file = new FileStream(srcFile, FileMode.Open);
+            file.Read(buffer, 0, 5);
+            file.Close();
+
+            if(buffer[0] == 0xef && buffer[1] == 0xbb && buffer[2] == 0xbf)
+                enc = Encoding.UTF8;
+            else if(buffer[0] == 0xfe && buffer[1] == 0xff)
+                enc = Encoding.Unicode;
+            else if(buffer[0] == 0 && buffer[1] == 0 && buffer[2] == 0xfe && buffer[3] == 0xff)
+                enc = Encoding.UTF32;
+            else if(buffer[0] == 0x2b && buffer[1] == 0x2f && buffer[2] == 0x76)
+                enc = Encoding.UTF7;
+
+            return enc;
         }
 
         private void txtFilePath_TextChanged(object sender, EventArgs e)

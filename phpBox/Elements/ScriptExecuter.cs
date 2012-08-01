@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -52,6 +53,19 @@ namespace phpBox
         public bool EditableParameter { get; set; }
         public bool ChangableScript { get; set; }
         public bool Exit { get; set; }
+
+        private Encoding _ScriptFileEncoding = Encoding.UTF8;
+        public Encoding ScriptFileEncoding
+        {
+            get
+            {
+                return _ScriptFileEncoding;
+            }
+            set
+            {
+                _ScriptFileEncoding = value;
+            }
+        }
 
         public string PHPFile { get; set; }
 
@@ -307,7 +321,8 @@ namespace phpBox
                 myStartInfo.RedirectStandardError = true;
                 myStartInfo.UseShellExecute = false;
                 myStartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
+                myStartInfo.StandardOutputEncoding = ScriptFileEncoding;
+                
                 myProcess = new Process();
                 myProcess.StartInfo = myStartInfo;
                 myProcess.EnableRaisingEvents = true;
@@ -330,8 +345,9 @@ namespace phpBox
                         myProcess.BeginOutputReadLine();
                         myProcess.WaitForExit();
                     }
-                    catch
+                    catch// (Exception ex)
                     {
+                        //System.Windows.Forms.MessageBox.Show(ex.Message);
                     }
                 }
 
